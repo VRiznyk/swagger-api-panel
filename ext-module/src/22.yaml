@@ -1,0 +1,37 @@
+  /XXX/XXX:
+    get:
+      tags:
+      - XXX
+      - manager
+      summary: XXX
+      description: |
+        XXX
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XXX'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - XXX
+      - manager
+      summary: XXX
+      description: |
+        XXX
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/XXX'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In

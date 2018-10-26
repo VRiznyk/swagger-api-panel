@@ -1,0 +1,8 @@
+openapi: 3.0.0
+
+todo:
+  /network/ntp:
+  /network/timezone:
+  /network/management/remotes:
+  /network/management/legacy:
+  /network/management/link:

@@ -1,0 +1,3082 @@
+openapi: 3.0.0
+#########################################################################
+info:
+  description: |
+    BAS-IP panel API specification
+  version: 0.9.0
+  title: BAS-IP panel API
+  contact:
+    email: dev@bas-ip.com
+#########################################################################
+servers:
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/basip/panel-web-api/0.1.0
+- description: BAS-IP panel in local network
+  url: http://192.168.1.178:8080/api/v0
+#########################################################################
+tags:
+- name: auth
+  description: |
+    Authentification part
+- name: status
+  description: |
+    Nav bar/Login page related
+- name: main
+  description: |
+    Related to main page of web interface
+- name: network
+  description: |
+    Related to network settings
+- name: device
+  description: |
+    Related to device settings
+- name: appartement
+  description: |
+    Related to appartements list
+- name: access
+  description: |
+    Related to acces management.
+    This part of API available only for admin account type
+- name: forward
+  description: |
+    Related to forward management
+- name: advanced
+  description: |
+    Related to advanced settings
+- name: security
+  description: |
+    Related to security settings
+- name: system
+  description: |
+    Related to system settings
+- name: debug
+  description: |
+    Various API for non-UI interaction with device
+- name: admin
+  description: |
+    Secured Admin-only calls. Admin account includes manager rights also
+- name: manager
+  description: |
+    Operations available to regular users
+
+
+  #########################################################################
+#########################################################################
+paths:
+
+  #auth
+  /login:
+    get:
+      tags:
+      - auth
+      security: []
+      summary: Logs user into the system
+      description: |
+        Used to collect a Token for a registered User
+      parameters:
+      - name: username
+        in: query
+        description: The user name for login
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: MD5 hash of the password for login
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Wrong login or password
+
+  /logout:
+    get:
+      tags:
+      - manager
+      - auth
+      summary: Logs out current session
+      description: |
+        Logs out current logged in user session
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Log in
+
+  #status
+  /device/language:
+    get:
+      tags:
+      - status
+      security: []
+      summary: Current system language
+      description: |
+        Get current system language
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+    post:
+      tags:
+      - status
+      - manager
+      summary: Set system language
+      parameters:
+      - name: language
+        in: query
+        description: The user name for login
+        required: true
+        schema:
+          $ref: '#/components/schemas/SupportedLanguage'
+      description: |
+        Uses for setting system language
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong language
+        '401':
+          description: Log in
+
+  /sip/status:
+    get:
+      tags:
+      - status
+      - manager
+      summary: current SIP status
+      description: |
+        Get current SIP registration status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SipStatus'
+        '401':
+          description: Log in
+
+  /frontend/language:
+    get:
+      tags:
+      - status
+      security: []
+      summary: Current frontend language
+      description: |
+        Get current fronend language
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+    post:
+      tags:
+      - status
+      - manager
+      summary: Set frontend language
+      parameters:
+      - name: language
+        in: query
+        description: The user name for login
+        required: true
+        schema:
+          $ref: '#/components/schemas/SupportedLanguage'
+      description: |
+        Uses for setting web interface language
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong language
+        '401':
+          description: Log in
+
+  /frontend/version:
+    get:
+      tags:
+      - status
+      security: []
+      summary: Frontend version
+      description: |
+        Get current frontend version
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FrontendVersion'
+
+  /device/name:
+    get:
+      tags:
+      - status
+      security: []
+      summary: Device Name
+      description: |
+        Information about device name
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceName'
+
+  #main
+  /dashboard:
+    get:
+      tags:
+      - main
+      - manager
+      summary: Dashboard information
+      description: |
+        Return dashboard information
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+        '401':
+          description: Log In
+
+  #network
+  ##network
+  /network/settings:
+    get:
+      tags:
+      - network
+      - manager
+      summary: Network settings
+      description: |
+        Returns network settings. If DHCP option is enabled,
+        response will contain settings gained from DHCP server.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkGeneralInfo'
+        '401':
+          description: Log In
+
+  /device/settings/static:
+    post:
+      tags:
+      - network
+      - manager
+      summary: Network static settings
+      description: |
+        Setup network static settings (doesn't turn on/off dhcp, use dhcp endpoint instead)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkStaticInfo'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /network/settings/dhcp:
+    post:
+      tags:
+      - network
+      - manager
+      summary: Turn on dhcp
+      description: |
+        Turn on dhcp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkDhcpInfo'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /network/mac:
+    get:
+      tags:
+      - network
+      - manager
+      summary: Device MAC address
+      description: |
+        Returns device MAC address
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MacAddress'
+        '401':
+          description: Log In
+
+  ##ntp
+  /network/ntp:
+    get:
+      tags:
+      - network
+      - manager
+      summary: NTP Settings
+      description: |
+        Returns NTP Settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ntp'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - network
+      - manager
+      summary: NTP Settings
+      description: |
+        Setup Ntp Settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ntp'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /network/timezone:
+    get:
+      tags:
+      - network
+      - manager
+      summary: Current timezone
+      description: |
+        Returns current timezone
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimezoneList'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - network
+      - manager
+      summary: Current timezone
+      description: |
+        Setup current timezone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrentTimezone'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  ##remote management
+  /network/management/remotes:
+    get:
+      tags:
+      - network
+      - manager
+      summary: Remote management servers
+      description: |
+        Getting remote management servers configuration.
+        We have two type of remote server: legacy ManagementSoftware and Link
+        Only one of them can be active.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteServers'
+        '401':
+          description: Log In
+
+  /network/management/legacy:
+    post:
+      tags:
+      - network
+      - manager
+      summary: Legacy ManagementSoftware settings
+      description: |
+        Setting legacy ManagementSoftware as active and setup server configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteLegacyServer'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /network/management/link:
+    post:
+      tags:
+      - network
+      - manager
+      summary: Remote Link server
+      description: |
+        Setting remote Link server as active and setup server configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteLinkServer'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+
+  #device
+  ##workmode
+  /device/mode/current:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Panel work mode
+      description: |
+        Returns current panel work mode.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentPanelMode'
+        '401':
+          description: Log In
+
+  /device/mode/unit:
+    post:
+      tags:
+      - device
+      - manager
+      summary: Set panel work mode to Unit mode
+      description: |
+        Set Panel work mode to Unit mode
+      parameters:
+      - name: building
+        in: query
+        description: Building Number [1-999]
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 999
+      - name: unit
+        in: query
+        description: Unit Number [1-99]
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 99
+      - name: device
+        in: query
+        description: Device Number[1-9]
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 9
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong or missing parameters
+        '401':
+          description: Log In
+
+  /device/mode/wall:
+    post:
+      tags:
+      - device
+      - manager
+      summary: Set panel work mode to Wall mode
+      description: |
+        Set panel work mode to Wall mode
+      parameters:
+      - name: device
+        in: query
+        description: Device Number[1-9]
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 9
+      - name: noUnit
+        in: query
+        description: |
+          Not using unit number when calling if noUnit=true
+        required: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong or missing parameters
+        '401':
+          description: Log In
+
+  ##sip
+  /device/sip/enable:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Information about Enabling/Disabling SIP
+      description: |
+        Information about Enabling/Disabling SIP
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SipEnable'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Enabling/Disabling SIP
+      description: |
+        Enabling/Disabling SIP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SipEnable'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/sip/settings:
+    get:
+      tags:
+      - device
+      - manager
+      summary: SIP Settings
+      description: |
+        Returns SIP Settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SipSettings'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: SIP Settings
+      description: |
+        Setup SIP Settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SipSettings'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  ##call
+  /device/call/concierge:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Concierge number
+      description: |
+        Returns concierge number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConciergeNumber'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Concierge number
+      description: |
+        Setup concierge number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConciergeNumber'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/call/dial/timeout:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Dial timeout
+      description: |
+        Return dial timeout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DialTimeout'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Dial timeout
+      description: |
+        Setup dial timeout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DialTimeout'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/call/talk/timeout:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Talk timeout
+      description: |
+        Return talk timeout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TalkTimeout'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Talk timeout
+      description: |
+        Setup Talk timeout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TalkTimeout'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/call/incoming:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Device incoming calls
+      description: |
+        Return device incoming calls status (on/off)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomingCalls'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Device incoming calls
+      description: |
+        Setup allowing incoming calls
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncomingCalls'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/call/incoming/answer/key/any:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Any key answer
+      description: |
+        Return any key answer option status for incoming calls
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnyKeyAnswer'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Any key answer
+      description: |
+        Setup any key answer option status for incoming calls
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnyKeyAnswer'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/call/dial/auto:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Auto dial after digital input
+      description: |
+        Auto dial after digital input
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoDial'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Auto dial after digital input
+      description: |
+        Auto dial after digital input
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoDial'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  ##settings
+  /device/settings/video:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Video resolution
+      description: |
+        Return video resolution
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Video resolution
+      description: |
+        Setup video resolution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Video'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/settings/payload:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Payload codec
+      description: |
+        Payload codec
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payload'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Payload codec
+      description: |
+        Payload codec
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payload'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/settings/volume/speaker:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Speaker volume settings
+      description: |
+        Return speaker volume settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Speaker volume settings
+      description: |
+        Setup speaker volume settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Volume'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/settings/volume/mic:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Mic volume settings
+      description: |
+        Return mic volume settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Mic volume settings
+      description: |
+        Setup mic volume settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Volume'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/settings/led:
+    get:
+      tags:
+      - device
+      - manager
+      summary: LED auto mode
+      description: |
+        Return LED auto mode
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedMode'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: LED auto mode
+      description: |
+        Turn On/Off LED auto mode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LedMode'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/settings/ir:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Infra-Red hardwarte motion detector
+      description: |
+        Return IR hardwarte motion detector status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfraRedDetector'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Infra-Red hardwarte motion detector
+      description: |
+        Turn On/Off IR hardwarte motion detector
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InfraRedDetector'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  ##tamper
+  /device/tamper/log:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Log tamper
+      description: |
+        Return log tamper
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tamper'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Log tamper
+      description: |
+        Setup log tamper
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tamper'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /device/tamper/sound:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Sound tamper
+      description: |
+        Return sound tamper
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tamper'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Sound tamper
+      description: |
+        Setup sound tamper
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tamper'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  ##locks
+  /device/lock/dtmf:
+    get:
+      tags:
+      - device
+      - manager
+      summary: Lock DTMF
+      description: |
+        Return lock DTMF
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockDtmf'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - device
+      - manager
+      summary: Lock DTMF
+      description: |
+        Setup lock DTMF
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LockDtmf'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  #appartement
+
+  /appartement/item:
+    post:
+      tags:
+      - appartement
+      - manager
+      summary: Appartement Entity
+      description: |
+        Create Appartement Entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseAppartementEntity'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /appartement/item/{appartement_iud}:
+    parameters:
+    - name: appartement_iud
+      in: path
+      required: true
+      description: |
+        Unique Identifier for Item
+      schema:
+        type: integer
+        minimum: 1
+    get:
+      tags:
+      - appartement
+      - manager
+      summary: Appartement Entity
+      description: |
+        Returns Appartement Entity
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedAppartementEntity'
+        '400':
+          description: Wrong appartement_iud
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - appartement
+      - manager
+      summary: Appartement Entity
+      description: |
+        Create Appartement Entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetailedAppartementEntity'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: |
+            Wrong JSON body |
+            Wrong appartement_iud
+        '401':
+          description: Log In
+    delete:
+      tags:
+      - appartement
+      - manager
+      summary: Appartement Entity
+      description: |
+        Delete Appartement Entity
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong appartement_iud
+        '401':
+          description: Log In
+
+  /appartement/item/{appartement_iud}/indentifier/{identifier_type}/{identifier_uid}:
+    parameters:
+    - name: appartement_iud
+      in: path
+      required: true
+      description: Unique Identifier for Item
+      schema:
+        type: integer
+        minimum: 1
+    - name: identifier_type
+      in: path
+      required: true
+      description: Identifier type (physical/input)
+      schema:
+        type: string
+        enum: [physical, input]
+    - name: identifier_uid
+      in: path
+      required: true
+      description: Unique Id for physical/input code identifier
+      schema:
+        type: integer
+        minimum: 1
+
+
+    post:
+      tags:
+      - appartement
+      - manager
+      summary: Attach identifier to appartement
+      description: Attach identifier to appartement
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: |
+            Wrong appartement iud |
+            Wrong identifier uid |
+            Identifier uid is attached to another appartement
+        '401':
+          description: Log In
+    delete:
+      tags:
+      - appartement
+      - manager
+      summary: Detach identifier from appartement
+      description: Detach identifier from appartement
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: |
+            Wrong appartement iud |
+            Wrong identifier uid |
+            Identifier uid is attached to another appartement
+        '401':
+          description: Log In
+
+  /appartement/items/list:
+    get:
+      tags:
+      - appartement
+      - manager
+      summary: Appartement's list
+      description: Return appartement's list
+      parameters:
+      - $ref: '#/components/parameters/paginationLimit'
+      - $ref: '#/components/parameters/paginationPageNumber'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppartementList'
+        '400':
+          description: |
+            Wrong pagination limit |
+            Wrong pagintation page number
+        '401':
+          description: Log In
+
+  /appartement/items/delete:
+    post:
+      tags:
+      - appartement
+      - manager
+      summary: Delete multiple appartement items
+      description: Delete multiple appartement items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UidReferenceArray'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  #access
+  /access/general/unlock/input/code:
+    get:
+      tags:
+      - access
+      - admin
+      summary: General input code
+      description: |
+        General input code
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralInputCode'
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+    post:
+      tags:
+      - access
+      - admin
+      summary: General input code
+      description: |
+        General input code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralInputCode'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/general/unlock/card/master:
+    get:
+      tags:
+      - access
+      - admin
+      summary: Master card
+      description: |
+        Master card
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MasterCard'
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+    post:
+      tags:
+      - access
+      - admin
+      summary: Master card
+      description: |
+        Master card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MasterCard'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/general/lock/timeout:
+    get:
+      tags:
+      - access
+      - admin
+      summary: Time after opening until locking
+      description: |
+        Time after opening until locking
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockTimeout'
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+    post:
+      tags:
+      - access
+      - admin
+      summary: Time after opening until locking
+      description: |
+        Time after opening until locking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LockTimeout'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/general/lock/delay:
+    get:
+      tags:
+      - access
+      - admin
+      summary: Time until opening
+      description: |
+        Time until opening
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockDelay'
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+    post:
+      tags:
+      - access
+      - admin
+      summary: Time until opening
+      description: |
+        Time until opening
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LockDelay'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/general/lock/open/now:
+    get:
+      tags:
+      - access
+      - admin
+      summary: Open lock via HTTP
+      description: |
+        Open lock via HTTP
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/general/elevator/floor:
+    get:
+      tags:
+      - access
+      - admin
+      summary: Info about floor for elevator module
+      description: |
+        Info about floor for elevator module
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ElevatorFloor'
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+    post:
+      tags:
+      - access
+      - admin
+      summary: Info about floor for elevator module
+      description: |
+        Info about floor for elevator module
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElevatorFloor'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/general/security/monitor:
+    get:
+      tags:
+      - access
+      - admin
+      summary: Turn on/off security mode
+      description: |
+        Turn on/off security mode
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityMonitor'
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+    post:
+      tags:
+      - access
+      - admin
+      summary: Turn on/off security mode
+      description: |
+        Turn on/off security mode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecurityMonitor'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/legacy/card/item/add:
+    post:
+      tags:
+      - access
+      - admin
+      summary: Create/Update card
+      description: |
+        Create/Update card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Card'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/legacy/card/item/delete:
+    post:
+      tags:
+      - access
+      - admin
+      summary: Delete card
+      description: |
+        Delete card
+      parameters:
+      - name: cardId
+        in: query
+        description: Card UID
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong/missing parameter
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/legacy/card/items/list:
+    get:
+      tags:
+      - access
+      - admin
+      summary: Returns cards table
+      description: |
+        Returns cards table
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardList'
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/legacy/card/items/add:
+    post:
+      tags:
+      - access
+      - admin
+      summary: Create/Update multiple cards
+      description: |
+        Create/Update multiple cards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardList'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/legacy/card/items/delete:
+    post:
+      tags:
+      - access
+      - admin
+      summary: Delete multiple cards
+      description: |
+        Delete multiple cards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardIdList'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  #forward
+  /forward/mode:
+    get:
+      tags:
+      - forward
+      - manager
+      summary: Forward strategy
+      description: |
+        Forward strategy
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForwardMode'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - forward
+      - manager
+      summary: Forward strategy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForwardMode'
+      description: |
+        Forward strategy
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /forward/legacy/item/add:
+    post:
+      tags:
+      - forward
+      - manager
+      summary: Add/update apartment forward settings
+      description: |
+        Add/update apartment forward settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForwardNumber'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /forward/legacy/item/delete:
+    post:
+      tags:
+      - forward
+      - manager
+      summary: Delete apartment forward settings
+      description: |
+        Delete apartment forward settings
+      parameters:
+      - name: apartmentNumber
+        in: query
+        description: apartment number
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong/Missing parameter
+        '401':
+          description: Log In
+
+  /forward/legacy/items/list:
+    get:
+      tags:
+      - forward
+      - manager
+      summary: Returns forward table
+      description: |
+        Returns forward table
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForwardNumberList'
+        '401':
+          description: Log In
+
+  /forward/legacy/items/add:
+    post:
+      tags:
+      - forward
+      - manager
+      summary: Update multiple apartment forward settings
+      description: |
+        Update multiple apartment forward settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForwardNumberList'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /forward/legacy/items/delete:
+    post:
+      tags:
+      - forward
+      - manager
+      summary: Delete multiple apartment forward settings
+      description: |
+        Delete multiple apartment forward settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForwardNumberIdList'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  #advanced
+
+  /advanced/announcement:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: announcement settings
+      description: |
+        announcement settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: announcement settings
+      description: |
+        announcement settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Announcement'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /advanced/rtsp/feed:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: RTSP feed against main camera stream
+      description: |
+        RTSP feed against main camera stream
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RTSPFeed'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: RTSP feed against main camera stream
+      description: |
+        RTSP feed against main camera stream
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RTSPFeed'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  #security
+  /security/password/admin:
+    post:
+      tags:
+      - security
+      - admin
+      summary: Change Admin password
+      description: |
+        Change Admin password
+      parameters:
+      - name: oldPassword
+        in: query
+        description: The old password for login in clear text
+        required: true
+        schema:
+          type: string
+      - name: newPassword
+        in: query
+        description: The new password for login in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong/Missing parameter
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /security/password/manager:
+    post:
+      tags:
+      - security
+      - manager
+      summary: Change manager password
+      description: |
+        Change manager password
+      parameters:
+      - name: oldPassword
+        in: query
+        description: The old password for login in clear text
+        required: true
+        schema:
+          type: string
+      - name: newPassword
+        in: query
+        description: The new password for login in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong/Missing parameter
+        '401':
+          description: Log In
+
+  #system
+  /system/reboot/run:
+    get:
+      tags:
+      - system
+      - manager
+      summary: Reboot panel
+      description: |
+        Reboot panel
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Log In
+
+  #debug
+  /debug/daemons/version:
+    get:
+      tags:
+      - manager
+      - debug
+      summary: Binary deamons version
+      description: |
+        Binary deamons version
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Daemons'
+        '401':
+          description: Log in
+
+#############################################################
+components:
+
+  schemas:
+    #
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: 93144b288eb1fdccbe46d6fc0f241a51766ecd3d
+        account_type:
+          type: string
+          enum: [manager, admin]
+    #
+    Language:
+      type: object
+      properties:
+        current_language:
+          $ref: '#/components/schemas/SupportedLanguage'
+        all_supported_languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportedLanguage'
+          example: [English, Russian]
+    #
+    SupportedLanguage:
+      type: string
+      enum:
+      - Russian
+      - English
+    #
+    SipStatus:
+      type: object
+      properties:
+        sip_status:
+          type: string
+          description: |
+            * `OK` - SIP is working
+            * `OFFLINE` - SIP is disabled
+            * `ERROR` - SIP is enabled, but registration is failure
+          enum: [OK, OFFLINE, ERROR]
+    #
+    FrontendVersion:
+      type: object
+      properties:
+        frontend_version:
+          type: string
+          example: 2.0.0
+    #
+    DeviceName:
+      type: object
+      properties:
+        frontend_version:
+          type: string
+          example: BAS-IP multiapartment panel
+    #
+    Dashboard:
+      type: object
+      description: |
+        If something wrong version will be `ERROR`
+      properties:
+        framework_version:
+          type: string
+          example: 1.6.6 18.06.2018
+        launcher_version:
+          type: string
+          example: 2.3.0
+        hybrid_enable:
+          type: boolean
+          example: true
+          description: |
+            Represents info about is VIZIT/LASKOMEX adapter installed
+        hybrid_version:
+          type: string
+          example: LASKOMEX SW 2.1, HW 3.0R1
+    #
+    NetworkGeneralInfo:
+      allOf:
+      - $ref: '#/components/schemas/NetworkDhcpInfo'
+      - $ref: '#/components/schemas/NetworkStaticInfo'
+    #
+    NetworkDhcpInfo:
+      type: object
+      properties:
+        dhcp:
+          type: boolean
+          example: false
+    #
+    NetworkStaticInfo:
+      type: object
+      properties:
+        ip_address:
+          type: string
+          example: 192.168.1.96
+          format: ipv4
+        mask:
+          type: string
+          example: 255.255.255.0
+          format: ipv4
+        gateway:
+          type: string
+          example: 192.168.1.1
+          format: ipv4
+        dns:
+          type: string
+          example: 8.8.8.8
+          format: ipv4
+    #
+    MacAddress:
+      type: object
+      properties:
+        mac_address:
+          type: string
+          example: "BC:F8:11:0D:4E:89"
+    #
+    RemoteServers:
+      allOf:
+      - type: object
+        properties:
+          active:
+            type: string
+            enum: [legacy, link, none]
+            example: link
+      - $ref: '#/components/schemas/RemoteLinkServer'
+      - $ref: '#/components/schemas/RemoteLegacyServer'
+    #
+    RemoteLinkServer:
+      type: object
+      properties:
+        link_url:
+          type: string
+          example: link.bas-ip.com
+          format: ipv4 or dns
+        link_password:
+          type: string
+          example: 123abc
+    #
+    RemoteLegacyServer:
+      type: object
+      properties:
+        rls_url:
+          type: string
+          example: 192.168.1.11
+          format: ipv4
+        rls_password:
+          type: string
+          example: 123abc
+    #
+    Ntp:
+      type: object
+      properties:
+        use_default:
+          type: boolean
+          example: false
+        custom_server:
+          type: string
+          format: url
+          example: pool.0.ntp.org
+    #
+    TimezoneEntity:
+      type: string
+      enum:
+      - UTC−12:00
+      - UTC−11:00
+      - UTC−10:00
+      - UTC−09:30
+      - UTC−09:00
+      - UTC−08:00
+      - UTC−07:00
+      - UTC−06:00
+      - UTC−05:00
+      - UTC−04:00
+      - UTC−03:30
+      - UTC−03:00
+      - UTC−02:00
+      - UTC−01:00
+      - UTC±00:00
+      - UTC+01:00
+      - UTC+02:00
+      - UTC+03:00
+      - UTC+03:30
+      - UTC+04:00
+      - UTC+04:30
+      - UTC+05:00
+      - UTC+05:30
+      - UTC+05:45
+      - UTC+06:00
+      - UTC+06:30
+      - UTC+07:00
+      - UTC+08:00
+      - UTC+08:45
+      - UTC+09:00
+      - UTC+09:30
+      - UTC+10:00
+      - UTC+10:30
+      - UTC+11:00
+      - UTC+12:00
+      - UTC+12:45
+      - UTC+13:00
+      - UTC+14:00
+      example: UTC+03:00
+    #
+    CurrentTimezone:
+      type: object
+      properties:
+        current_timezone:
+          $ref: '#/components/schemas/TimezoneEntity'
+    #
+    TimezoneList:
+      type: object
+      properties:
+        current_timezone:
+          $ref: '#/components/schemas/TimezoneEntity'
+        timezones_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimezoneEntity'
+          example:
+          - UTC−12:00
+          - UTC−11:00
+          - UTC−10:00
+          - UTC−09:30
+          - UTC−09:00
+          - UTC−08:00
+          - UTC−07:00
+          - UTC−06:00
+          - UTC−05:00
+          - UTC−04:00
+          - UTC−03:30
+          - UTC−03:00
+          - UTC−02:00
+          - UTC−01:00
+          - UTC±00:00
+          - UTC+01:00
+          - UTC+02:00
+          - UTC+03:00
+          - UTC+03:30
+          - UTC+04:00
+          - UTC+04:30
+          - UTC+05:00
+          - UTC+05:30
+          - UTC+05:45
+          - UTC+06:00
+          - UTC+06:30
+          - UTC+07:00
+          - UTC+08:00
+          - UTC+08:45
+          - UTC+09:00
+          - UTC+09:30
+          - UTC+10:00
+          - UTC+10:30
+          - UTC+11:00
+          - UTC+12:00
+          - UTC+12:45
+          - UTC+13:00
+          - UTC+14:00
+    #
+    CurrentPanelMode:
+      type: object
+      properties:
+        current_panel_mode:
+          type: string
+          enum: [Unit,Wall]
+          example: Unit
+        building:
+          type: integer
+          minimum: 1
+          maximum: 999
+          example: 1
+        unit:
+          type: integer
+          minimum: 1
+          maximum: 99
+          example: 1
+        device:
+          type: integer
+          minimum: 1
+          maximum: 9
+          example: 1
+        no_unit:
+          type: boolean
+          example: true
+    #
+    SipEnable:
+      type: object
+      properties:
+        sip_enable:
+          type: boolean
+          example: true
+    #
+    SipSettings:
+      type: object
+      properties:
+        proxy:
+          type: string
+          format: ipv4|dns
+          example: sip:sip.bas-ip.com
+        realm:
+          type: string
+          format: ipv4|dns
+          example: sip.bas-ip.com
+        user:
+          type: string
+          example: 101
+        password:
+          type: string
+          example: 123abc
+        stun:
+          type: object
+          properties:
+            ip:
+              type: string
+              format: ipv4|dns
+              example: stun.l.google.com
+            port:
+              type: integer
+              example: 19302
+    #
+    ConciergeNumber:
+      type: object
+      properties:
+        number_enable:
+          type: boolean
+          example: true
+        number_url:
+          type: string
+          format: sip uri
+          example: sip:1001@sip.bas-ip.com
+    #
+    DialTimeout:
+      type: object
+      properties:
+        dial_timeout:
+          type: integer
+          description: |
+            Timeout in seconds
+          minimum: 35
+          maximum: 120
+          example: 60
+    #
+    TalkTimeout:
+      type: object
+      properties:
+        talk_timeout:
+          type: integer
+          description: |
+            Timeout in seconds
+          minimum: 120
+          maximum: 1800
+          example: 600
+    #
+    IncomingCalls:
+      type: object
+      properties:
+        incomming_calls_allowed:
+          type: boolean
+          example: true
+    #
+    AnyKeyAnswer:
+      type: object
+      properties:
+        any_key_answer:
+          type: boolean
+          example: true
+    #
+    AutoDial:
+      type: object
+      properties:
+        auto_dial_enable:
+          type: boolean
+          example: true
+        digital_count:
+          type: integer
+          minimum: 1
+          maximum: 4
+          example: 2
+    #
+    Video:
+      type: object
+      properties:
+        video_resolution:
+          type: string
+          enum: ["320x240", "640x480", "1280x720"]
+          example: "320x240"
+        payload_codec_h264:
+          type: integer
+          example: 102
+    #
+    Payload:
+      type: object
+      properties:
+        payload_codec_h264:
+          type: integer
+          minimum: 96
+          maximum: 127
+          example: 102
+    #
+    Volume:
+      type: object
+      properties:
+        volume_level:
+          type: integer
+          minimum: 1
+          maximum: 6
+          example: 3
+    #
+    LedMode:
+      type: object
+      properties:
+        led_auto_mode_enable:
+          type: boolean
+          example: true
+    #
+    InfraRedDetector:
+      type: object
+      properties:
+        ir_enable:
+          type: boolean
+          example: true
+    #
+    Tamper:
+      type: object
+      properties:
+        tamper_enable:
+          type: boolean
+          example: true
+        tamper_delay:
+          type: integer
+          minimum: 3
+          maximum: 60
+          example: 5
+    #
+    LockDtmf:
+      type: object
+      properties:
+        lock_number:
+          type: integer
+          minimum: 1
+          maximum: 2
+          example: 1
+        lock_dtmf_enable:
+          type: boolean
+          example: true
+        lock_dtmf_code:
+          type: string
+          pattern: dtmf
+          example: "#"
+    #
+    #############################################
+    #
+    LogicalAddress:
+      type: object
+      properties:
+        building:
+          type: integer
+          minimum: 1
+          maximum: 999
+          example: 1
+        unit:
+          type: integer
+          minimum: 1
+          maximum: 99
+          example: 1
+        floor:
+          type: integer
+          minimum: 1
+          maximum: 99
+          example: 1
+        room:
+          type: integer
+          minimum: 1
+          maximum: 99
+          example: 1
+    #
+    UidReference:
+      type: integer
+      description: |
+        UID for entities referenses.
+        If value is `-1`, then it means that is no entity reference for this structure
+      minimum: -1
+      example: 3
+    #
+    UidReferenceObj:
+      type: object
+      properties:
+        exist:
+          type: boolean
+          example: true
+        uid_item:
+          $ref: '#/components/schemas/UidReference'
+    #
+    UidReferenceArray:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 4
+        uid_items:
+          type: array
+          description: |
+            Array of UID for entities referenses.
+          items:
+            $ref: '#/components/schemas/UidReference'
+          example: [11,13,23,42]
+    #
+    PaginationOptions:
+      type: object
+      properties:
+        total_items:
+          type: integer
+          minimum: 0
+          example: 18
+        items_limit:
+          type: integer
+          enum: [10,25,50]
+          example: 10
+        total_pages:
+          type: integer
+          minimum: 1
+          example: 2
+        current_page:
+          type: integer
+          minimum: 1
+          example: 1
+    #
+    FilterOptions:
+      type: object
+      required:
+      - enable
+      properties:
+        enable:
+          type: boolean
+          example: true
+        field:
+          type: string
+        type:
+          type: string
+          enum: [more, less, equals]
+          example: equals
+        expression:
+          oneOf:
+          - type: string
+          - type: integer
+    #
+    SortOptions:
+      type: object
+      properties:
+        field:
+          type: string
+          example: appartement_name
+        asc:
+          type: boolean
+          example: true
+    #
+    ListOptions:
+      type: object
+      properties:
+        pagination:
+          $ref: '#/components/schemas/PaginationOptions'
+        filter:
+          $ref: '#/components/schemas/FilterOptions'
+        sort:
+          $ref: '#/components/schemas/SortOptions'
+    ###
+    BaseAppartementEntity:
+      type: object
+      properties:
+        appartement_address:
+          $ref: '#/components/schemas/LogicalAddress'
+        appartement_name:
+          type: string
+          example: "221B Baker Street"
+        residents:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 3
+    #
+    DetailedAppartementEntity:
+      allOf:
+      - $ref: '#/components/schemas/BaseAppartementEntity'
+      - type: object
+        properties:
+          identifiers:
+            type: object
+            properties:
+              physicals:
+                $ref: '#/components/schemas/UidReferenceArray'
+              input_numbers:
+                $ref: '#/components/schemas/UidReferenceArray'
+          forward:
+            $ref: '#/components/schemas/UidReferenceObj'
+    #
+    ListAppartementEntity:
+      allOf:
+      - $ref: '#/components/schemas/BaseAppartementEntity'
+      - type: object
+        properties:
+          identifier_physical_count:
+            type: integer
+            minimum: 0
+            example: 2
+          identifier_input_count:
+            type: integer
+            minimum: 0
+            example: 1
+          forward_count:
+            type: integer
+            minimum: 0
+            example: 5
+    #
+    AppartementList:
+      type: object
+      properties:
+        list_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAppartementEntity'
+          example:
+            [
+            {"dummy":"dummy"},
+            {"dummy":"dummy"},
+            {"dummy":"dummy"}
+            ]
+        list_option:
+          $ref: '#/components/schemas/ListOptions'
+    #
+    #############################################
+    GeneralInputCode:
+      type: object
+      properties:
+        input_code_enable:
+          type: boolean
+          example: true
+        input_code_number:
+          type: string
+          format: numbers
+          example: 0000
+    #
+    MasterCard:
+      type: object
+      properties:
+        master_card:
+          type: string
+          format: numbers
+          example: "123456"
+    #
+    LockTimeout:
+      type: object
+      properties:
+        lock_timeout:
+          type: integer
+          description: |
+            Timeout in seconds
+          minimum: 1
+          maximum: 9
+          example: 3
+    #
+    LockDelay:
+      type: object
+      properties:
+        lock_delay:
+          type: integer
+          description: |
+            Timeout in seconds
+          minimum: 0
+          maximum: 9
+          example: 1
+    #
+    ElevatorFloor:
+      type: object
+      properties:
+        floor:
+          type: integer
+          description: |
+            Timeout in seconds
+          minimum: 0
+          maximum: 99
+          example: 1
+    #
+    SecurityMonitor:
+      type: object
+      properties:
+        security_monitor_enable:
+          type: boolean
+          example: false
+    #
+    Card:
+      type: object
+      properties:
+        card_id:
+          type: integer
+          example: 123456
+        building:
+          type: integer
+          example: 1
+        unit:
+          type: integer
+          example: 1
+        floor:
+          type: integer
+          example: 2
+        apartment:
+          type: integer
+          example: 12
+    #
+    CardId:
+      type: object
+      properties:
+        card_id:
+          type: integer
+          example: 123456
+    #
+    CardList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 3
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+          example:
+            [
+            { "card_id": 100001, "building": 1, "unit": 1, "floor": 2, "apartment": 11 },
+            { "card_id": 100002, "building": 1, "unit": 1, "floor": 2, "apartment": 12 },
+            { "card_id": 100003, "building": 1, "unit": 1, "floor": 2, "apartment": 13 }
+            ]
+    #
+    CardIdList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 3
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/CardId'
+          example:
+            [
+            { "card_id": 100001 },
+            { "card_id": 100002 },
+            { "card_id": 100003 }
+            ]
+    #
+    ForwardMode:
+      type: object
+      properties:
+        forward_mode:
+          type: string
+          enum: [OneByOne, AllAtOnce]
+          example: OneByOne
+    #
+    ForwardEntity:
+      type: object
+      description: |
+        One of these variants -
+        * `NUMBER` - e.g. 1234, when calls transmit to to "sip:1234@your.sip.proxy"
+        * `SIP URI` - e.g sip:1234@some.sip.proxy
+        * `LASKOMEX` - e.g. "laskomex:65"
+        * `VIZIT` - e.g. "vizit:65"
+      properties:
+        forward_entity:
+          type: string
+          example: "sip:1234@your.sip.proxy"
+    #
+    ForwardNumber:
+      type: object
+      properties:
+        apartment_id:
+          type: string
+          example: "123"
+        forward_entity_list:
+          type: array
+          minimum: 1
+          maximum: 8
+          items:
+            $ref: '#/components/schemas/ForwardEntity'
+          example:
+            [
+            { "forward_entity": "sip:1001@sip.bas-ip.com" },
+            { "forward_entity": "vizit:123" },
+            { "forward_entity": "sip:1002@sip.bas-ip.com" }
+            ]
+    #
+    ForwardNumberId:
+      type: object
+      properties:
+        apartment_id:
+          type: integer
+          example: 123
+    #
+    ForwardNumberList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 3
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForwardNumber'
+          example:
+            [
+            {
+              "apartment_id": 101,
+              "forward_entity_list":
+                [
+                { "forward_entity": "sip:1011@sip.bas-ip.com" },
+                { "forward_entity": "vizit:101" },
+                { "forward_entity": "sip:1012@sip.bas-ip.com" }
+                ]
+            },
+            {
+              "apartment_id": 102,
+              "forward_entity_list":
+                [
+                { "forward_entity": "sip:1021@sip.bas-ip.com" },
+                { "forward_entity": "vizit:103" },
+                { "forward_entity": "sip:1022@sip.bas-ip.com" }
+                ]
+            },
+            {
+              "apartment_id": 103,
+              "forward_entity_list":
+                [
+                { "forward_entity": "sip:1031@sip.bas-ip.com" },
+                { "forward_entity": "vizit:103" },
+                { "forward_entity": "sip:1032@sip.bas-ip.com" }
+                ]
+            },
+            ]
+    #
+    ForwardNumberIdList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 3
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForwardNumberId'
+          example:
+            [
+            { "apartment_id": 100011 },
+            { "apartment_id": 100012 },
+            { "apartment_id": 100013 }
+            ]
+    #
+    Announcement:
+      type: object
+      properties:
+        announcement_enable:
+          type: boolean
+          example: false
+        announcement_url:
+          type: string
+          format: http/rtsp url
+          example: "http://bas-ip.com"
+        announcement_timeout:
+          type: integer
+          description: |
+            Timeout in minutes
+          minimum: 10
+          maximum: 300
+          example: 30
+    #
+    RTSPFeed:
+      type: object
+      properties:
+        rtsp_feed_url_list:
+          type: array
+          items:
+            type: object
+            properties:
+              rtsp_url:
+                type: string
+                format: rtsp uri
+                example: "rtsp://login:password@ip.addr"
+          minimum: 0
+          maximum: 4
+          example:
+            [
+            { "rtsp_url": "rtsp://login:password@ip.addr" },
+            { "rtsp_url": "rtsp://login:password@ip.addr" },
+            { "rtsp_url": "rtsp://login:password@ip.addr" }
+            ]
+    #
+    Daemons:
+      type: object
+      properties:
+        monitor:
+          type: string
+          example: 1.0.0
+        dnake_talk:
+          type: string
+          example: 1.0.0
+        dnake_control:
+          type: string
+          example: 1.0.0
+        dnake_media:
+          type: string
+          example: 1.0.0
+        dnake_nvs:
+          type: string
+          example: 1.0.0
+        upgrade:
+          type: string
+          example: 1.0.0
+        wx_access:
+          type: string
+          example: 1.0.0
+        face:
+          type: string
+          example: 1.0.0
+        mini_httpd:
+          type: string
+          example: 1.0.0
+    #
+  #############################################################
+  parameters:
+    #
+    paginationLimit:
+      name: limit
+      in: query
+      required: false
+      description: |
+        Number of appartement. Value by default is 10
+      schema:
+        type: integer
+        enum: [10,20,30,50]
+        default: 10
+        example: 20
+    #
+    paginationPageNumber:
+      name: pageNumber
+      in: query
+      required: false
+      description: |
+        Page number
+      schema:
+        type: integer
+        minimum: 1
+        example: 2
+        default: 1
+
+  #############################################################
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+#############################################################
+security:
+- BearerAuth: []
