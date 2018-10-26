@@ -30,9 +30,9 @@ tags:
 - name: device
   description: |
     Related to device settings
-- name: appartement
+- name: apartment
   description: |
-    Related to appartements list
+    Related to apartments list
 - name: access
   description: |
     Related to acces management.
@@ -1224,22 +1224,22 @@ paths:
         '401':
           description: Log In
 
-  #appartement
+  #apartment
 
-  /appartement/item:
+  /apartment/item:
     post:
       tags:
-      - appartement
+      - apartment
       - manager
-      summary: Appartement Entity
+      summary: Apartment Entity
       description: |
-        Create Appartement Entity
+        Create Apartment Entity
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BaseAppartementEntity'
+              $ref: '#/components/schemas/BaseApartmentEntity'
       responses:
         '200':
           description: OK
@@ -1248,9 +1248,9 @@ paths:
         '401':
           description: Log In
 
-  /appartement/item/{appartement_iud}:
+  /apartment/item/{apartment_iud}:
     parameters:
-    - name: appartement_iud
+    - name: apartment_iud
       in: path
       required: true
       description: |
@@ -1260,62 +1260,62 @@ paths:
         minimum: 1
     get:
       tags:
-      - appartement
+      - apartment
       - manager
-      summary: Appartement Entity
+      summary: Apartment Entity
       description: |
-        Returns Appartement Entity
+        Returns Apartment Entity
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DetailedAppartementEntity'
+                $ref: '#/components/schemas/DetailedApartmentEntity'
         '400':
-          description: Wrong appartement_iud
+          description: Wrong apartment iud
         '401':
           description: Log In
     patch:
       tags:
-      - appartement
+      - apartment
       - manager
-      summary: Appartement Entity
+      summary: Apartment Entity
       description: |
-        Create Appartement Entity
+        Create Apartment Entity
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DetailedAppartementEntity'
+              $ref: '#/components/schemas/DetailedApartmentEntity'
       responses:
         '200':
           description: OK
         '400':
           description: |
             Wrong JSON body |
-            Wrong appartement_iud
+            Wrong apartment iud
         '401':
           description: Log In
     delete:
       tags:
-      - appartement
+      - apartment
       - manager
-      summary: Appartement Entity
+      summary: Apartment Entity
       description: |
-        Delete Appartement Entity
+        Delete Apartment Entity
       responses:
         '200':
           description: OK
         '400':
-          description: Wrong appartement_iud
+          description: Wrong apartment_iud
         '401':
           description: Log In
 
-  /appartement/item/{appartement_iud}/indentifier/{identifier_type}/{identifier_uid}:
+  /apartment/item/{apartment_iud}/indentifier/{identifier_type}/{identifier_uid}:
     parameters:
-    - name: appartement_iud
+    - name: apartment_iud
       in: path
       required: true
       description: Unique Identifier for Item
@@ -1340,44 +1340,44 @@ paths:
 
     post:
       tags:
-      - appartement
+      - apartment
       - manager
-      summary: Attach identifier to appartement
-      description: Attach identifier to appartement
+      summary: Attach identifier to apartment
+      description: Attach identifier to apartment
       responses:
         '200':
           description: OK
         '400':
           description: |
-            Wrong appartement iud |
+            Wrong apartment iud |
             Wrong identifier uid |
-            Identifier uid is attached to another appartement
+            Identifier uid is attached to another apartment
         '401':
           description: Log In
     delete:
       tags:
-      - appartement
+      - apartment
       - manager
-      summary: Detach identifier from appartement
-      description: Detach identifier from appartement
+      summary: Detach identifier from apartment
+      description: Detach identifier from apartment
       responses:
         '200':
           description: OK
         '400':
           description: |
-            Wrong appartement iud |
+            Wrong apartment iud |
             Wrong identifier uid |
-            Identifier uid is attached to another appartement
+            Identifier uid is attached to another apartment
         '401':
           description: Log In
 
-  /appartement/items/list:
+  /apartment/items/list:
     get:
       tags:
-      - appartement
+      - apartment
       - manager
-      summary: Appartement's list
-      description: Return appartement's list
+      summary: Apartment's list
+      description: Return apartment's list
       parameters:
       - $ref: '#/components/parameters/paginationLimit'
       - $ref: '#/components/parameters/paginationPageNumber'
@@ -1387,7 +1387,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AppartementList'
+                $ref: '#/components/schemas/ApartmentList'
         '400':
           description: |
             Wrong pagination limit |
@@ -1395,13 +1395,13 @@ paths:
         '401':
           description: Log In
 
-  /appartement/items/delete:
+  /apartment/items/delete:
     post:
       tags:
-      - appartement
+      - apartment
       - manager
-      summary: Delete multiple appartement items
-      description: Delete multiple appartement items
+      summary: Delete multiple apartment items
+      description: Delete multiple apartment items
       requestBody:
         required: true
         content:
@@ -2657,6 +2657,7 @@ components:
           example: true
         field:
           type: string
+          example: "apartment_name"
         type:
           type: string
           enum: [more, less, equals]
@@ -2665,13 +2666,14 @@ components:
           oneOf:
           - type: string
           - type: integer
+          example: "Baker Street"
     #
     SortOptions:
       type: object
       properties:
         field:
           type: string
-          example: appartement_name
+          example: apartment_name
         asc:
           type: boolean
           example: true
@@ -2686,12 +2688,12 @@ components:
         sort:
           $ref: '#/components/schemas/SortOptions'
     ###
-    BaseAppartementEntity:
+    BaseApartmentEntity:
       type: object
       properties:
-        appartement_address:
+        apartment_address:
           $ref: '#/components/schemas/LogicalAddress'
-        appartement_name:
+        apartment_name:
           type: string
           example: "221B Baker Street"
         residents:
@@ -2701,9 +2703,9 @@ components:
               type: integer
               example: 3
     #
-    DetailedAppartementEntity:
+    DetailedApartmentEntity:
       allOf:
-      - $ref: '#/components/schemas/BaseAppartementEntity'
+      - $ref: '#/components/schemas/BaseApartmentEntity'
       - type: object
         properties:
           identifiers:
@@ -2716,9 +2718,9 @@ components:
           forward:
             $ref: '#/components/schemas/UidReferenceObj'
     #
-    ListAppartementEntity:
+    ListApartmentEntity:
       allOf:
-      - $ref: '#/components/schemas/BaseAppartementEntity'
+      - $ref: '#/components/schemas/BaseApartmentEntity'
       - type: object
         properties:
           identifier_physical_count:
@@ -2734,13 +2736,13 @@ components:
             minimum: 0
             example: 5
     #
-    AppartementList:
+    ApartmentList:
       type: object
       properties:
         list_items:
           type: array
           items:
-            $ref: '#/components/schemas/ListAppartementEntity'
+            $ref: '#/components/schemas/ListApartmentEntity'
           example:
             [
             {"dummy":"dummy"},
@@ -3053,7 +3055,7 @@ components:
       in: query
       required: false
       description: |
-        Number of appartement. Value by default is 10
+        Number of items. Value by default is 10
       schema:
         type: integer
         enum: [10,20,30,50]
