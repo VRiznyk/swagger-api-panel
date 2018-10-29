@@ -1336,8 +1336,6 @@ paths:
       schema:
         type: integer
         minimum: 1
-
-
     post:
       tags:
       - apartment
@@ -1381,6 +1379,9 @@ paths:
       parameters:
       - $ref: '#/components/parameters/paginationLimit'
       - $ref: '#/components/parameters/paginationPageNumber'
+      - $ref: '#/components/parameters/sortField'
+      - $ref: '#/components/parameters/sortType'
+      - $ref: '#/components/parameters/filter'
       responses:
         '200':
           description: OK
@@ -1390,8 +1391,11 @@ paths:
                 $ref: '#/components/schemas/ApartmentList'
         '400':
           description: |
-            Wrong pagination limit |
-            Wrong pagintation page number
+            - Wrong pagination limit
+            - Wrong pagintation page number
+            - Wrong sort field
+            - Wrong sort type
+            - Wrong filter options
         '401':
           description: Log In
 
@@ -2647,26 +2651,43 @@ components:
           minimum: 1
           example: 1
     #
-    FilterOptions:
+    RequestFilterOptions:
       type: object
-      required:
-      - enable
       properties:
-        enable:
-          type: boolean
-          example: true
-        field:
+        filter_field:
           type: string
           example: "apartment_name"
-        type:
+        filter_type:
           type: string
           enum: [more, less, equals]
           example: equals
-        expression:
-          oneOf:
-          - type: string
-          - type: integer
+        filter_format:
+          type: string
+          enum: [string, number]
+          example: string
+        filter_value:
+          type: string
           example: "Baker Street"
+    #
+    FilterOptions:
+      allOf:
+      - $ref: '#/components/schemas/RequestFilterOptions'
+      type: object
+      required:
+      - available_filtering
+      properties:
+        available_filtering:
+          type: boolean
+          example: true
+        available_fields:
+          type: array
+          items:
+            type: string
+            example: "apartment_name"
+        is_filtered:
+          type: boolean
+          example: true
+
     #
     SortOptions:
       type: object
@@ -2723,6 +2744,8 @@ components:
       - $ref: '#/components/schemas/BaseApartmentEntity'
       - type: object
         properties:
+          item_uid:
+            $ref: '#/components/schemas/UidReference'
           identifier_physical_count:
             type: integer
             minimum: 0
@@ -2745,9 +2768,54 @@ components:
             $ref: '#/components/schemas/ListApartmentEntity'
           example:
             [
-            {"dummy":"dummy"},
-            {"dummy":"dummy"},
-            {"dummy":"dummy"}
+            {
+              "apartment_address": {
+                "building": 1,
+                "unit": 1,
+                "floor": 1,
+                "room": 1
+              },
+              "apartment_name": "221A Baker Street",
+              "residents": {
+                "count": 3
+              },
+              "item_uid": 1,
+              "identifier_physical_count": 2,
+              "identifier_input_count": 1,
+              "forward_count": 5
+            },
+            {
+              "apartment_address": {
+                "building": 1,
+                "unit": 1,
+                "floor": 1,
+                "room": 2
+              },
+              "apartment_name": "221B Baker Street",
+              "residents": {
+                "count": 4
+              },
+              "item_uid": 2,
+              "identifier_physical_count": 2,
+              "identifier_input_count": 2,
+              "forward_count": 1
+            },
+            {
+              "apartment_address": {
+                "building": 1,
+                "unit": 1,
+                "floor": 1,
+                "room": 3
+              },
+              "apartment_name": "221C Baker Street",
+              "residents": {
+                "count": 1
+              },
+              "item_uid": 3,
+              "identifier_physical_count": 1,
+              "identifier_input_count": 4,
+              "forward_count": 2
+            }
             ]
         list_option:
           $ref: '#/components/schemas/ListOptions'
@@ -3073,6 +3141,44 @@ components:
         minimum: 1
         example: 2
         default: 1
+    #
+    sortField:
+      name: sortField
+      in: query
+      required: false
+      description: Field name (JSON Key in item entity)
+      schema:
+        type: string
+    #
+    sortType:
+      name: sortType
+      in: query
+      required: false
+      description: Sort type (asc/desc)
+      schema:
+        type: string
+        enum: [asc, desc]
+        example: asc
+        default: asc
+    #
+    filter:
+      name: filter
+      in: query
+      required: false
+      description: Filtering options
+      schema:
+        $ref: '#/components/schemas/RequestFilterOptions'
+      style: form
+      explode: true
+
+  #############################################################
+  requestBodies:
+    RequestFilterOptions:
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RequestFilterOptions'
 
   #############################################################
   securitySchemes:
