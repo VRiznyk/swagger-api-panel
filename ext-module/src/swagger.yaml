@@ -64,7 +64,7 @@ tags:
 #########################################################################
 paths:
 
-  #auth
+  ###auth###
   /login:
     get:
       tags:
@@ -110,7 +110,7 @@ paths:
         '401':
           description: Log in
 
-  #status
+  ###status###
   /device/language:
     get:
       tags:
@@ -235,7 +235,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeviceName'
 
-  #main
+  ###main###
   /dashboard:
     get:
       tags:
@@ -254,7 +254,7 @@ paths:
         '401':
           description: Log In
 
-  #network
+  ###network###
   ##network
   /network/settings:
     get:
@@ -480,7 +480,7 @@ paths:
           description: Log In
 
 
-  #device
+  ###device###
   ##workmode
   /device/mode/current:
     get:
@@ -1224,8 +1224,7 @@ paths:
         '401':
           description: Log In
 
-  #apartment
-
+  ###apartment###
   /apartment/item:
     post:
       tags:
@@ -1420,7 +1419,9 @@ paths:
         '401':
           description: Log In
 
-  #access
+  ###access##
+  ##general
+  ###unlock
   /access/general/unlock/input/code:
     get:
       tags:
@@ -1505,6 +1506,48 @@ paths:
         '403':
           description: Administrator rights required
 
+  /access/general/unlock/remote:
+    get:
+      tags:
+      - access
+      - admin
+      summary: Remote access management server
+      description: |
+        Remote access management server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteAccessServer'
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+    post:
+      tags:
+      - access
+      - admin
+      summary: Remote access management server
+      description: |
+        Remote access management server
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteAccessServer'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+  ###lock
   /access/general/lock/timeout:
     get:
       tags:
@@ -2124,8 +2167,7 @@ paths:
                 $ref: '#/components/schemas/Daemons'
         '401':
           description: Log in
-
-#############################################################
+#########################################################################
 components:
 
   schemas:
@@ -2840,6 +2882,17 @@ components:
           format: numbers
           example: "123456"
     #
+    RemoteAccessServer:
+      type: object
+      properties:
+        remote_access_server_enable:
+          type: boolean
+          example: true
+        remote_access_server_url:
+          type: string
+          format: url
+          example: link.bas-ip.com
+    #
     LockTimeout:
       type: object
       properties:
@@ -3170,21 +3223,18 @@ components:
         $ref: '#/components/schemas/RequestFilterOptions'
       style: form
       explode: true
-
-  #############################################################
-  requestBodies:
-    RequestFilterOptions:
-      required: false
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RequestFilterOptions'
-
+    #
+    lockNumber:
+      name: lock_number
+      in: path
+      type: integer
+      enum: [1,2]
+      example: 1
   #############################################################
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
-#############################################################
+#########################################################################
 security:
 - BearerAuth: []
