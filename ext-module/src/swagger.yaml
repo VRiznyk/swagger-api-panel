@@ -1247,16 +1247,9 @@ paths:
         '401':
           description: Log In
 
-  /apartment/item/{apartment_iud}:
+  /apartment/item/{apartmentUid}:
     parameters:
-    - name: apartment_iud
-      in: path
-      required: true
-      description: |
-        Unique Identifier for Item
-      schema:
-        type: integer
-        minimum: 1
+    - $ref: '#/components/parameters/pathApartmentUid'
     get:
       tags:
       - apartment
@@ -1312,29 +1305,11 @@ paths:
         '401':
           description: Log In
 
-  /apartment/item/{apartment_iud}/indentifier/{identifier_type}/{identifier_uid}:
+  /apartment/item/{apartmentUid}/indentifier/{identifierType}/{identifierUid}:
     parameters:
-    - name: apartment_iud
-      in: path
-      required: true
-      description: Unique Identifier for Item
-      schema:
-        type: integer
-        minimum: 1
-    - name: identifier_type
-      in: path
-      required: true
-      description: Identifier type (physical/input)
-      schema:
-        type: string
-        enum: [physical, input]
-    - name: identifier_uid
-      in: path
-      required: true
-      description: Unique Id for physical/input code identifier
-      schema:
-        type: integer
-        minimum: 1
+    - $ref: '#/components/parameters/pathApartmentUid'
+    - $ref: '#/components/parameters/pathIdentifierType'
+    - $ref: '#/components/parameters/pathIdentifierUid'
     post:
       tags:
       - apartment
@@ -1548,7 +1523,9 @@ paths:
         '403':
           description: Administrator rights required
   ###lock
-  /access/general/lock/timeout:
+  /access/general/lock/timeout/{lockNumber}:
+    parameters:
+      - $ref: '#/components/parameters/pathLockNumber'
     get:
       tags:
       - access
@@ -1590,7 +1567,9 @@ paths:
         '403':
           description: Administrator rights required
 
-  /access/general/lock/delay:
+  /access/general/lock/delay/{lockNumber}:
+    parameters:
+      - $ref: '#/components/parameters/pathLockNumber'
     get:
       tags:
       - access
@@ -1632,14 +1611,34 @@ paths:
         '403':
           description: Administrator rights required
 
-  /access/general/lock/open/now:
+  /access/general/lock/open/accepted/{lockNumber}:
+    parameters:
+      - $ref: '#/components/parameters/pathLockNumber'
     get:
       tags:
       - access
       - admin
       summary: Open lock via HTTP
       description: |
-        Open lock via HTTP
+        Open lock and trigger "access accepted" event via HTTP (for Remote Access Server needs)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
+  /access/general/lock/open/denied/{lockNumber}:
+    parameters:
+    - $ref: '#/components/parameters/pathLockNumber'
+    get:
+      tags:
+      - access
+      - admin
+      summary: Trigger "access denied" event via HTTP
+      description: |
+        Show "access denied" via HTTP (for Remote Access Server needs)
       responses:
         '200':
           description: OK
@@ -3170,6 +3169,7 @@ components:
     #
   #############################################################
   parameters:
+    ##############################
     #
     paginationLimit:
       name: limit
@@ -3224,12 +3224,43 @@ components:
       style: form
       explode: true
     #
-    lockNumber:
-      name: lock_number
+    ###############################
+    #
+    pathApartmentUid:
+      name: apartmentUid
       in: path
-      type: integer
-      enum: [1,2]
-      example: 1
+      required: true
+      description: Unique Identifier for Item
+      schema:
+        type: integer
+        minimum: 1
+    #
+    pathIdentifierType:
+      name: identifierType
+      in: path
+      required: true
+      description: Identifier type (physical/input)
+      schema:
+        type: string
+        enum: [physical, input]
+    #
+    pathIdentifierUid:
+      name: identifierUid
+      in: path
+      required: true
+      description: Unique Id for physical/input code identifier
+      schema:
+        type: integer
+        minimum: 1
+    #
+    pathLockNumber:
+      name: lockNumber
+      in: path
+      required: true
+      schema:
+        type: integer
+        enum: [1,2]
+        example: 1
   #############################################################
   securitySchemes:
     BearerAuth:
