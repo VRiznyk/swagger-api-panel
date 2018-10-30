@@ -235,6 +235,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeviceName'
 
+  /device/time:
+    get:
+      tags:
+        - status
+        - manager
+      summary: Device Time
+      description: Device Time
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceTime'
+
   ###main###
   /dashboard:
     get:
@@ -1242,6 +1257,13 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    $ref: '#/components/schemas/UidReference'
         '400':
           description: Wrong JSON body
         '401':
@@ -1305,7 +1327,7 @@ paths:
         '401':
           description: Log In
 
-  /apartment/item/{apartmentUid}/indentifier/{identifierType}/{identifierUid}:
+  /apartment/item/{apartmentUid}/indentifier/{identifierUid}:
     parameters:
     - $ref: '#/components/parameters/pathApartmentUid'
     - $ref: '#/components/parameters/pathIdentifierType'
@@ -1525,7 +1547,7 @@ paths:
   ###lock
   /access/general/lock/timeout/{lockNumber}:
     parameters:
-      - $ref: '#/components/parameters/pathLockNumber'
+    - $ref: '#/components/parameters/pathLockNumber'
     get:
       tags:
       - access
@@ -1569,7 +1591,7 @@ paths:
 
   /access/general/lock/delay/{lockNumber}:
     parameters:
-      - $ref: '#/components/parameters/pathLockNumber'
+    - $ref: '#/components/parameters/pathLockNumber'
     get:
       tags:
       - access
@@ -1611,9 +1633,9 @@ paths:
         '403':
           description: Administrator rights required
 
-  /access/general/lock/open/accepted/{lockNumber}:
+  /access/general/lock/open/remote/accepted/{lockNumber}:
     parameters:
-      - $ref: '#/components/parameters/pathLockNumber'
+    - $ref: '#/components/parameters/pathLockNumber'
     get:
       tags:
       - access
@@ -1629,7 +1651,7 @@ paths:
         '403':
           description: Administrator rights required
 
-  /access/general/lock/open/denied/{lockNumber}:
+  /access/general/lock/open/remote/denied/{lockNumber}:
     parameters:
     - $ref: '#/components/parameters/pathLockNumber'
     get:
@@ -1647,6 +1669,163 @@ paths:
         '403':
           description: Administrator rights required
 
+  /access/general/lock/open/temporary/mode/{lockNumber}:
+    parameters:
+    - $ref: '#/components/parameters/pathLockNumber'
+    get:
+      tags:
+      - access
+      - admin
+      summary: Lock temporary opening mode
+      description: |
+        Lock temporary opening mode
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockMode'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - access
+      - admin
+      summary: Lock temporary opening mode
+      description: |
+        Lock temporary opening mode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LockMode'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /access/general/lock/open/temporary/timer/{lockNumber}:
+    parameters:
+    - $ref: '#/components/parameters/pathLockNumber'
+    get:
+      tags:
+      - access
+      - admin
+      summary: Open lock temporary by timer
+      description: |
+        Open lock temporary by timer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockTimer'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - access
+      - admin
+      summary: Open lock temporary by timer
+      description: |
+        Open lock temporary by timer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LockTimer'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /access/general/lock/open/temporary/schedule/{lockNumber}:
+    parameters:
+    - $ref: '#/components/parameters/pathLockNumber'
+    get:
+      tags:
+      - access
+      - admin
+      summary: Schedule for temporary opening for lock
+      description: |
+        Schedule for temporary opening for lock
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockSchedule'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - access
+      - admin
+      summary: Schedule for temporary opening for lock
+      description: |
+        Schedule for temporary opening for lock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LockSchedule'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /access/general/lock/open/before/reboot/{lockNumber}:
+    parameters:
+    - $ref: '#/components/parameters/pathLockNumber'
+    get:
+      tags:
+      - access
+      - admin
+      summary: Open lock before rebooting panel
+      description: |
+        Open lock before rebooting panel
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Log In
+
+  /access/general/lock/open/status/{lockNumber}:
+    parameters:
+    - $ref: '#/components/parameters/pathLockNumber'
+    get:
+      tags:
+      - access
+      - admin
+      summary: Lock status
+      description: |
+        Lock status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockStatus'
+        '401':
+          description: Log In
+
+  ###extended
   /access/general/elevator/floor:
     get:
       tags:
@@ -1731,6 +1910,25 @@ paths:
         '403':
           description: Administrator rights required
 
+  ##identiers
+
+  /access/identifiers/item:
+    post:
+
+  /access/identifiers/item/{identifierUid}:
+    parameters:
+      - $ref: '#/components/parameters/pathIdentifierUid'
+    get:
+    patch:
+    delete:
+
+  /access/identifiers/items/list:
+    get:
+
+  /access/identifiers/items/delete:
+    post:
+
+  ################################
   /access/legacy/card/item/add:
     post:
       tags:
@@ -2219,9 +2417,17 @@ components:
     DeviceName:
       type: object
       properties:
-        frontend_version:
+        device_name:
           type: string
           example: BAS-IP multiapartment panel
+    #
+    DeviceTime:
+      type: object
+      properties:
+        device_time_unix:
+          $ref: '#/components/schemas/unixTimestamp'
+        device_timezone:
+          $ref: '#/components/schemas/TimezoneEntity'
     #
     Dashboard:
       type: object
@@ -2914,6 +3120,53 @@ components:
           maximum: 9
           example: 1
     #
+    LockMode:
+      type: object
+      properties:
+        lock_temporary_opening_mode:
+          type: string
+          enum: [none, timer, schedule]
+    #
+    LockTimer:
+      type: object
+      properties:
+        lock_timer_in_minutes:
+          type: integer
+          description: |
+            Timer delay in minutes. Minimum 1 min, maximum 24 hour (1440 min)
+          minimum: 1
+          maximum: 1440
+          example: 30
+    #
+    unixTimestamp:
+      type: integer
+      description: Unix Timestamp Date
+      example: 1540819272
+    #
+    LockSchedule:
+      type: object
+      properties:
+        lock_schedule_from:
+          $ref: '#/components/schemas/unixTimestamp'
+        lock_schedule_to:
+          $ref: '#/components/schemas/unixTimestamp'
+    #
+    LockStatus:
+      type: object
+      properties:
+        is_opened:
+          type: boolean
+          example: true
+        current_time:
+          $ref: '#/components/schemas/unixTimestamp'
+        time_when_closing:
+          $ref: '#/components/schemas/unixTimestamp'
+        is_open_before_reboot:
+          type: boolean
+          example: false
+    #
+    ##################################################
+    #
     ElevatorFloor:
       type: object
       properties:
@@ -2931,6 +3184,96 @@ components:
         security_monitor_enable:
           type: boolean
           example: false
+    #
+    ####################################################
+    #
+    Identifier:
+      type: object
+      properties:
+        appartment_uid:
+          $ref: '#/components/schemas/UidReference'
+        identifier_owner:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Sherlock Holmes"
+            is_guest:
+              type: boolean
+              example: false
+        identifier_type:
+          type: string
+          enum: [card, ukey, input_code]
+          example: ukey
+        identifier_number:
+          type: string
+          example: 123456
+          format: number
+        access_type:
+          type: object
+          requred:
+          - is_permanent
+          properties:
+            is_permanent:
+            time_profile_uid:
+              $ref: '#/components/schemas/UidReference'
+        valid:
+          type: object
+          properties:
+            time:
+              type: object
+              propreties:
+                is_permanent:
+                from:
+                  $ref: '#/components/schemas/unixTimestamp'
+                to:
+                  $ref: '#/components/schemas/unixTimestamp'
+            passes:
+              type: object
+              propreties:
+                is_permanent:
+                  type: boolean
+                  example: false
+                max_passes:
+                  type: integer
+                  description: |
+                    If `0` - infinity
+                minimum: 0
+                example: 3
+              current_passes:
+                type: integer
+                minimum: 0
+                example: 1
+        lock_number:
+          type: integer
+          enum: [1,2]
+          example:1
+
+    BaseIdentifier:
+      type: object
+      properties:
+        identifier_owner:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Sherlock Holmes"
+            type:
+              type: string
+              enum: [owner, guest]
+              example: owner
+        identifier_type:
+          type: string
+          enum: [card, ukey, input_code]
+          example: ukey
+        identifier_number:
+          type: string
+          example: 123456
+          format: number
+
+
+    #
+    #######################################################
     #
     Card:
       type: object
