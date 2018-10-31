@@ -238,8 +238,8 @@ paths:
   /device/time:
     get:
       tags:
-        - status
-        - manager
+      - status
+      - manager
       summary: Device Time
       description: Device Time
       responses:
@@ -1914,10 +1914,38 @@ paths:
 
   /access/identifiers/item:
     post:
+      tags:
+      - access
+      - admin
+      summary: Create Identifier Entity
+      description: |
+        Create Identifier Entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewIdentifier'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    $ref: '#/components/schemas/UidReference'
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
 
   /access/identifiers/item/{identifierUid}:
     parameters:
-      - $ref: '#/components/parameters/pathIdentifierUid'
+    - $ref: '#/components/parameters/pathIdentifierUid'
     get:
     patch:
     delete:
@@ -3187,69 +3215,53 @@ components:
     #
     ####################################################
     #
-    Identifier:
+    IdPassesLeftOptions:
       type: object
       properties:
-        appartment_uid:
-          $ref: '#/components/schemas/UidReference'
-        identifier_owner:
+        passes_left:
+          type: integer
+          description: if access is permanent - return `-1` value
+          minimum: -1
+          example: 3
+    #
+    IdValidOptions:
+      type: object
+      properties:
+        time:
           type: object
-          properties:
-            name:
-              type: string
-              example: "Sherlock Holmes"
-            is_guest:
+          required:
+          - is_permanent
+          propreties:
+            is_permanent:
               type: boolean
               example: false
-        identifier_type:
-          type: string
-          enum: [card, ukey, input_code]
-          example: ukey
-        identifier_number:
-          type: string
-          example: 123456
-          format: number
-        access_type:
+            from:
+              $ref: '#/components/schemas/unixTimestamp'
+            to:
+              $ref: '#/components/schemas/unixTimestamp'
+        passes:
           type: object
-          requred:
+          required:
           - is_permanent
-          properties:
+          propreties:
             is_permanent:
-            time_profile_uid:
-              $ref: '#/components/schemas/UidReference'
-        valid:
-          type: object
-          properties:
-            time:
-              type: object
-              propreties:
-                is_permanent:
-                from:
-                  $ref: '#/components/schemas/unixTimestamp'
-                to:
-                  $ref: '#/components/schemas/unixTimestamp'
-            passes:
-              type: object
-              propreties:
-                is_permanent:
-                  type: boolean
-                  example: false
-                max_passes:
-                  type: integer
-                  description: |
-                    If `0` - infinity
-                minimum: 0
-                example: 3
-              current_passes:
-                type: integer
-                minimum: 0
-                example: 1
-        lock_number:
-          type: integer
-          enum: [1,2]
-          example:1
-
-    BaseIdentifier:
+              type: boolean
+              example: false
+            max_passes:
+              type: integer
+              minimum: 1
+              example: 3
+    #
+    IdAccessOptions:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Stucture for furter implementation (timeprofiles)
+          enum: [permanent]
+          example: permanent
+    #
+    IdBaseOptions:
       type: object
       properties:
         identifier_owner:
@@ -3264,14 +3276,62 @@ components:
               example: owner
         identifier_type:
           type: string
-          enum: [card, ukey, input_code]
+          enum: [card, ukey, inputCode]
           example: ukey
         identifier_number:
           type: string
           example: 123456
           format: number
-
-
+        lock:
+          type: string
+          enum: [first, second, all]
+          example: first
+    #
+    NewIdentifier:
+      allOf:
+        - $ref: '#/components/schemas/IdBaseOptions'
+    #
+    UpdatedIdentifier:
+      type: object
+      properties:
+        base:
+          $ref: '#/components/schemas/IdBaseOptions'
+        appartment:
+          $ref: '#/components/schemas/UidReference'
+        access:
+          $ref: '#/components/schemas/IdAccessOptions'
+        valid:
+          $ref: '#/components/schemas/IdValidOptions'
+    #
+    DetailedIdentifier:
+      allOf:
+      - '#/components/schemas/UpdatedIdentifier'
+      - type: object
+        properties:
+          additional:
+            allOf:
+            - '#/components/schemas/IdPassesLeftOptions'
+    #
+    ListIdentifierEntity:
+      allOf:
+        - $ref: '#/components/schemas/UidReference'
+        - $ref: '#/components/schemas/DetailedIdentifier'
+    #
+    IdentifierList:
+      type: object
+      properties:
+        list_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListIdentifierEntity'
+          example:
+            [
+            {"key":"value"},
+            {"key":"value"},
+            {"key":"value"}
+            ]
+          list_option:
+            $ref: '#/components/schemas/ListOptions'
     #
     #######################################################
     #
