@@ -1918,8 +1918,7 @@ paths:
       - access
       - admin
       summary: Create Identifier Entity
-      description: |
-        Create Identifier Entity
+      description: Create Identifier Entity
       requestBody:
         required: true
         content:
@@ -1947,14 +1946,117 @@ paths:
     parameters:
     - $ref: '#/components/parameters/pathIdentifierUid'
     get:
+      tags:
+      - access
+      - admin
+      summary: Returns Identifier Entity
+      description: Returns Identifier Entity
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedIdentifier'
+        '400':
+          description: Wrong Identifier iud
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
     patch:
+      tags:
+      - access
+      - admin
+      summary: Update Identifier Entity
+      description: Update Identifier Entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatedIdentifier'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: |
+            - Wrong JSON body
+            - Wrong apartment iud
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
     delete:
+      tags:
+      - access
+      - admin
+      summary: Delete Identifier Entity
+      description: Delete Identifier Entity
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong identifierUid
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
 
   /access/identifiers/items/list:
     get:
+      tags:
+      - access
+      - admin
+      summary: Identifier's list
+      description: Return Identifier's list
+      parameters:
+      - $ref: '#/components/parameters/paginationLimit'
+      - $ref: '#/components/parameters/paginationPageNumber'
+      - $ref: '#/components/parameters/sortField'
+      - $ref: '#/components/parameters/sortType'
+      - $ref: '#/components/parameters/filter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentifierList'
+        '400':
+          description: |
+            - Wrong pagination limit
+            - Wrong pagintation page number
+            - Wrong sort field
+            - Wrong sort type
+            - Wrong filter options
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
 
   /access/identifiers/items/delete:
     post:
+      tags:
+      - access
+      - admin
+      summary: Delete multiple Identifier items
+      description: Delete multiple Identifier items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UidReferenceArray'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
 
   ################################
   /access/legacy/card/item/add:
@@ -3229,9 +3331,7 @@ components:
       properties:
         time:
           type: object
-          required:
-          - is_permanent
-          propreties:
+          properties:
             is_permanent:
               type: boolean
               example: false
@@ -3239,11 +3339,11 @@ components:
               $ref: '#/components/schemas/unixTimestamp'
             to:
               $ref: '#/components/schemas/unixTimestamp'
-        passes:
-          type: object
           required:
           - is_permanent
-          propreties:
+        passes:
+          type: object
+          properties:
             is_permanent:
               type: boolean
               example: false
@@ -3251,6 +3351,8 @@ components:
               type: integer
               minimum: 1
               example: 3
+          required:
+          - is_permanent
     #
     IdAccessOptions:
       type: object
@@ -3289,7 +3391,7 @@ components:
     #
     NewIdentifier:
       allOf:
-        - $ref: '#/components/schemas/IdBaseOptions'
+      - $ref: '#/components/schemas/IdBaseOptions'
     #
     UpdatedIdentifier:
       type: object
@@ -3305,17 +3407,17 @@ components:
     #
     DetailedIdentifier:
       allOf:
-      - '#/components/schemas/UpdatedIdentifier'
+      - $ref: '#/components/schemas/UpdatedIdentifier'
       - type: object
         properties:
           additional:
             allOf:
-            - '#/components/schemas/IdPassesLeftOptions'
+            - $ref: '#/components/schemas/IdPassesLeftOptions'
     #
     ListIdentifierEntity:
       allOf:
-        - $ref: '#/components/schemas/UidReference'
-        - $ref: '#/components/schemas/DetailedIdentifier'
+      - $ref: '#/components/schemas/UidReference'
+      - $ref: '#/components/schemas/DetailedIdentifier'
     #
     IdentifierList:
       type: object
@@ -3330,8 +3432,8 @@ components:
             {"key":"value"},
             {"key":"value"}
             ]
-          list_option:
-            $ref: '#/components/schemas/ListOptions'
+        list_option:
+          $ref: '#/components/schemas/ListOptions'
     #
     #######################################################
     #
@@ -3396,7 +3498,7 @@ components:
             ]
     #
     ForwardMode:
-      type: object
+      type:     object
       properties:
         forward_mode:
           type: string
