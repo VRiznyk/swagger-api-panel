@@ -4,8 +4,7 @@
     - XXX
     - manager
     summary: XXX
-    description: |
-      XXX
+    description: XXX
     responses:
       '200':
         description: OK
@@ -20,8 +19,7 @@
     - XXX
     - manager
     summary: XXX
-    description: |
-      XXX
+    description: XXX
     requestBody:
       required: true
       content:

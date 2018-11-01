@@ -64,7 +64,8 @@ tags:
 #########################################################################
 paths:
 
-  ###auth###
+  ################# auth ###################
+
   /login:
     get:
       tags:
@@ -110,7 +111,8 @@ paths:
         '401':
           description: Log in
 
-  ###status###
+  ################# status #################
+
   /device/language:
     get:
       tags:
@@ -250,7 +252,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeviceTime'
 
-  ###main###
+  ################# main #################
+
   /dashboard:
     get:
       tags:
@@ -269,8 +272,9 @@ paths:
         '401':
           description: Log In
 
-  ###network###
-  ##network
+  ################# network #################
+
+  #network
   /network/settings:
     get:
       tags:
@@ -352,7 +356,7 @@ paths:
         '401':
           description: Log In
 
-  ##ntp
+  #ntp
   /network/ntp:
     get:
       tags:
@@ -429,7 +433,7 @@ paths:
         '401':
           description: Log In
 
-  ##remote management
+  #remote management
   /network/management/remotes:
     get:
       tags:
@@ -495,8 +499,9 @@ paths:
           description: Log In
 
 
-  ###device###
-  ##workmode
+  ################# device #################
+
+  #workmode
   /device/mode/current:
     get:
       tags:
@@ -588,7 +593,7 @@ paths:
         '401':
           description: Log In
 
-  ##sip
+  #sip
   /device/sip/enable:
     get:
       tags:
@@ -665,7 +670,7 @@ paths:
         '401':
           description: Log In
 
-  ##call
+  #call
   /device/call/concierge:
     get:
       tags:
@@ -894,7 +899,7 @@ paths:
         '401':
           description: Log In
 
-  ##settings
+  #settings
   /device/settings/video:
     get:
       tags:
@@ -1123,7 +1128,7 @@ paths:
         '401':
           description: Log In
 
-  ##tamper
+  #tamper
   /device/tamper/log:
     get:
       tags:
@@ -1200,7 +1205,7 @@ paths:
         '401':
           description: Log In
 
-  ##locks
+  #locks
   /device/lock/dtmf:
     get:
       tags:
@@ -1239,7 +1244,8 @@ paths:
         '401':
           description: Log In
 
-  ###apartment###
+  ################# apartment #################
+
   /apartment/item:
     post:
       tags:
@@ -1415,9 +1421,10 @@ paths:
         '401':
           description: Log In
 
-  ###access##
-  ##general
-  ###unlock
+  ################# access #################
+
+  #general
+  ##unlock
   /access/general/unlock/input/code:
     get:
       tags:
@@ -1543,7 +1550,8 @@ paths:
           description: Log In
         '403':
           description: Administrator rights required
-  ###lock
+
+  ##lock
   /access/general/lock/timeout/{lockNumber}:
     parameters:
     - $ref: '#/components/parameters/pathLockNumber'
@@ -1824,7 +1832,7 @@ paths:
         '401':
           description: Log In
 
-  ###extended
+  ##extended
   /access/general/elevator/floor:
     get:
       tags:
@@ -1910,7 +1918,6 @@ paths:
           description: Administrator rights required
 
   ##identiers
-
   /access/identifiers/item:
     post:
       tags:
@@ -2096,7 +2103,6 @@ paths:
         '403':
           description: Administrator rights required
 
-
   /access/identifiers/items/import:
     post:
       tags:
@@ -2114,13 +2120,15 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Wrong file
         '401':
           description: Log In
         '403':
           description: Administrator rights required
 
-  ################################
-  #forward
+  ################# forward #################
+
   /forward/mode:
     get:
       tags:
@@ -2266,16 +2274,16 @@ paths:
         '401':
           description: Log In
 
-  #advanced
+  ################# advanced #################
 
+  #announcement
   /advanced/announcement:
     get:
       tags:
       - advanced
       - manager
-      summary: announcement settings
-      description: |
-        announcement settings
+      summary: Announcement settings
+      description: Announcement settings
       responses:
         '200':
           description: OK
@@ -2289,9 +2297,8 @@ paths:
       tags:
       - advanced
       - manager
-      summary: announcement settings
-      description: |
-        announcement settings
+      summary: Announcement settings
+      description: Announcement settings
       requestBody:
         required: true
         content:
@@ -2306,14 +2313,14 @@ paths:
         '401':
           description: Log In
 
+  #RTSP feed
   /advanced/rtsp/feed:
     get:
       tags:
       - advanced
       - manager
       summary: RTSP feed against main camera stream
-      description: |
-        RTSP feed against main camera stream
+      description: RTSP feed against main camera stream
       responses:
         '200':
           description: OK
@@ -2328,8 +2335,7 @@ paths:
       - advanced
       - manager
       summary: RTSP feed against main camera stream
-      description: |
-        RTSP feed against main camera stream
+      description: RTSP feed against main camera stream
       requestBody:
         required: true
         content:
@@ -2344,7 +2350,648 @@ paths:
         '401':
           description: Log In
 
-  #security
+  #wallpaper
+  /advanced/wallpaper/custom/enable:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Enable/disable custom wallpaper
+      description: Enable/disable custom wallpaper
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WallpaperStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Enable/disable custom wallpaper
+      description: Enable/disable custom wallpaper
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WallpaperStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /advanced/wallpaper/custom/file:
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Upload Wallpaper image
+      description: Upload Wallpaper image
+      requestBody:
+        required: true
+        content:
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong file
+        '401':
+          description: Log In
+
+  #notification
+  /advanced/notification/button/press/text:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns buttons press notification settings
+      description: Returns buttons press notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTextStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup buttons press notification status
+      description: Setup buttons press notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup buttons press notification text
+      description: Setup buttons press notification text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationText'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /advanced/notification/button/press/sound:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns buttons press notification settings
+      description: Returns buttons press notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSoundStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup buttons press notification status
+      description: Setup buttons press notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup buttons press notification sound
+      description: Setup buttons press notification sound
+      requestBody:
+        required: true
+        content:
+          audio/vnd.wave:
+            schema:
+              $ref: '#/components/schemas/NotificationSound'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong .wav file
+        '401':
+          description: Log In
+    delete:
+      tags:
+      - advanced
+      - manager
+      summary: Delete buttons press notification sound
+      description: Delete buttons press notification sound
+
+  /advanced/notification/ringing/tone/text:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns ringing tone notification settings
+      description: Returns ringing tone notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTextStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup ringing tone notification status
+      description: Setup ringing tone notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup ringing tone notification text
+      description: Setup ringing tone notification text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationText'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /advanced/notification/ringing/tone/sound:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns ringing tone notification settings
+      description: Returns ringing tone notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSoundStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup ringing tone notification status
+      description: Setup ringing tone notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup ringing tone notification sound
+      description: Setup ringing tone notification sound
+      requestBody:
+        required: true
+        content:
+          audio/vnd.wave:
+            schema:
+              $ref: '#/components/schemas/NotificationSound'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong .wav file
+        '401':
+          description: Log In
+    delete:
+      tags:
+      - advanced
+      - manager
+      summary: Delete ringing tone notification sound
+      description: Delete ringing tone notification sound
+
+  /advanced/notification/lock/open/text:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns lock open notification settings
+      description: Returns lock open notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTextStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup lock open notification status
+      description: Setup lock open notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup lock open notification text
+      description: Setup lock open notification text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationText'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /advanced/notification/lock/open/sound:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns lock open notification settings
+      description: Returns lock open notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSoundStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup lock open notification status
+      description: Setup lock open notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup lock open notification sound
+      description: Setup lock open notification sound
+      requestBody:
+        required: true
+        content:
+          audio/vnd.wave:
+            schema:
+              $ref: '#/components/schemas/NotificationSound'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong .wav file
+        '401':
+          description: Log In
+    delete:
+      tags:
+      - advanced
+      - manager
+      summary: Delete lock open notification sound
+      description: Delete lock open notification sound
+
+  /advanced/notification/error/text:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns error text notification settings
+      description: Returns error text notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTextStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup error text notification status
+      description: Setup error text notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup error text notification text
+      description: Setup error text notification text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationText'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /advanced/notification/error/sound:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns error text notification settings
+      description: Returns error text notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSoundStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup error text notification status
+      description: Setup error text notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup error text notification sound
+      description: Setup error text notification sound
+      requestBody:
+        required: true
+        content:
+          audio/vnd.wave:
+            schema:
+              $ref: '#/components/schemas/NotificationSound'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong .wav file
+        '401':
+          description: Log In
+    delete:
+      tags:
+      - advanced
+      - manager
+      summary: Delete error text notification sound
+      description: Delete error text notification sound
+
+  /advanced/notification/emergency/text:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns error text notification settings
+      description: Returns error text notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTextStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup error text notification status
+      description: Setup error text notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup error text notification text
+      description: Setup error text notification text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationText'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+
+  /advanced/notification/emergency/sound:
+    get:
+      tags:
+      - advanced
+      - manager
+      summary: Returns error text notification settings
+      description: Returns error text notification settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSoundStatus'
+        '401':
+          description: Log In
+    post:
+      tags:
+      - advanced
+      - manager
+      summary: Setup error text notification status
+      description: Setup error text notification status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatus'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong JSON body
+        '401':
+          description: Log In
+    patch:
+      tags:
+      - advanced
+      - manager
+      summary: Setup error text notification sound
+      description: Setup error text notification sound
+      requestBody:
+        required: true
+        content:
+          audio/vnd.wave:
+            schema:
+              $ref: '#/components/schemas/NotificationSound'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Wrong .wav file
+        '401':
+          description: Log In
+    delete:
+      tags:
+      - advanced
+      - manager
+      summary: Delete error text notification sound
+      description: Delete error text notification sound
+
+  ################# security #################
+
   /security/password/admin:
     post:
       tags:
@@ -2405,7 +3052,8 @@ paths:
         '401':
           description: Log In
 
-  #system
+  ################# system #################
+
   /system/reboot/run:
     get:
       tags:
@@ -2420,7 +3068,8 @@ paths:
         '401':
           description: Log In
 
-  #debug
+  ################# debug #################
+
   /debug/daemons/version:
     get:
       tags:
@@ -2438,6 +3087,7 @@ paths:
                 $ref: '#/components/schemas/Daemons'
         '401':
           description: Log in
+
 #########################################################################
 components:
 
@@ -3008,7 +3658,6 @@ components:
         is_filtered:
           type: boolean
           example: true
-
     #
     SortOptions:
       type: object
@@ -3673,6 +4322,60 @@ components:
             { "rtsp_url": "rtsp://login:password@ip.addr" },
             { "rtsp_url": "rtsp://login:password@ip.addr" }
             ]
+    #
+    WallpaperStatus:
+      type: object
+      properties:
+        wallpaper_enable:
+          type: boolean
+          example: true
+    #
+    NotificationStatus:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+    #
+    NotificationText:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "Hello World"
+    #
+    NotificationSound:
+      type: object
+      properties:
+        status:
+          type: string
+          format: binary
+    #
+    NotificationTextStatus:
+      allOf:
+        - $ref: '#/components/schemas/NotificationStatus'
+        - $ref: '#/components/schemas/NotificationText'
+
+    #
+    NotificationSoundStatus:
+      allOf:
+        - $ref: '#/components/schemas/NotificationStatus'
+        - type: object
+          properties:
+            file:
+              type: object
+              required:
+              - is_uploaded
+              properties:
+                is_uploaded:
+                  type: boolean
+                  example: true
+                name:
+                  type: string
+                  example: "HelloWorld.wav"
+                url:
+                  type: string
+                  example: "/sound/HelloWorld.wav"
     #
     Daemons:
       type: object
