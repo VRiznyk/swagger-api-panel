@@ -2525,6 +2525,13 @@ paths:
       - manager
       summary: Delete buttons press notification sound
       description: Delete buttons press notification sound
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: There is no .wav file
+        '401':
+          description: Log In
 
   /advanced/notification/ringing/tone/text:
     get:
@@ -2641,6 +2648,13 @@ paths:
       - manager
       summary: Delete ringing tone notification sound
       description: Delete ringing tone notification sound
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: There is no .wav file
+        '401':
+          description: Log In
 
   /advanced/notification/lock/open/text:
     get:
@@ -2757,6 +2771,13 @@ paths:
       - manager
       summary: Delete lock open notification sound
       description: Delete lock open notification sound
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: There is no .wav file
+        '401':
+          description: Log In
 
   /advanced/notification/error/text:
     get:
@@ -2873,6 +2894,13 @@ paths:
       - manager
       summary: Delete error text notification sound
       description: Delete error text notification sound
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: There is no .wav file
+        '401':
+          description: Log In
 
   /advanced/notification/emergency/text:
     get:
@@ -2989,6 +3017,13 @@ paths:
       - manager
       summary: Delete error text notification sound
       description: Delete error text notification sound
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: There is no .wav file
+        '401':
+          description: Log In
 
   ################# security #################
 
@@ -4119,66 +4154,6 @@ components:
     #
     #######################################################
     #
-    Card:
-      type: object
-      properties:
-        card_id:
-          type: integer
-          example: 123456
-        building:
-          type: integer
-          example: 1
-        unit:
-          type: integer
-          example: 1
-        floor:
-          type: integer
-          example: 2
-        apartment:
-          type: integer
-          example: 12
-    #
-    CardId:
-      type: object
-      properties:
-        card_id:
-          type: integer
-          example: 123456
-    #
-    CardList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 3
-        list:
-          type: array
-          items:
-            $ref: '#/components/schemas/Card'
-          example:
-            [
-            { "card_id": 100001, "building": 1, "unit": 1, "floor": 2, "apartment": 11 },
-            { "card_id": 100002, "building": 1, "unit": 1, "floor": 2, "apartment": 12 },
-            { "card_id": 100003, "building": 1, "unit": 1, "floor": 2, "apartment": 13 }
-            ]
-    #
-    CardIdList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 3
-        list:
-          type: array
-          items:
-            $ref: '#/components/schemas/CardId'
-          example:
-            [
-            { "card_id": 100001 },
-            { "card_id": 100002 },
-            { "card_id": 100003 }
-            ]
-    #
     ForwardMode:
       type:     object
       properties:
@@ -4353,29 +4328,29 @@ components:
     #
     NotificationTextStatus:
       allOf:
-        - $ref: '#/components/schemas/NotificationStatus'
-        - $ref: '#/components/schemas/NotificationText'
+      - $ref: '#/components/schemas/NotificationStatus'
+      - $ref: '#/components/schemas/NotificationText'
 
     #
     NotificationSoundStatus:
       allOf:
-        - $ref: '#/components/schemas/NotificationStatus'
-        - type: object
-          properties:
-            file:
-              type: object
-              required:
-              - is_uploaded
-              properties:
-                is_uploaded:
-                  type: boolean
-                  example: true
-                name:
-                  type: string
-                  example: "HelloWorld.wav"
-                url:
-                  type: string
-                  example: "/sound/HelloWorld.wav"
+      - $ref: '#/components/schemas/NotificationStatus'
+      - type: object
+        properties:
+          file:
+            type: object
+            required:
+            - is_uploaded
+            properties:
+              is_uploaded:
+                type: boolean
+                example: true
+              name:
+                type: string
+                example: "HelloWorld.wav"
+              url:
+                type: string
+                example: "/sound/HelloWorld.wav"
     #
     Daemons:
       type: object
