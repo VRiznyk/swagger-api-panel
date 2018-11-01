@@ -1330,7 +1330,6 @@ paths:
   /apartment/item/{apartmentUid}/indentifier/{identifierUid}:
     parameters:
     - $ref: '#/components/parameters/pathApartmentUid'
-    - $ref: '#/components/parameters/pathIdentifierType'
     - $ref: '#/components/parameters/pathIdentifierUid'
     post:
       tags:
@@ -2003,6 +2002,25 @@ paths:
         '403':
           description: Administrator rights required
 
+  /access/identifiers/item/{identifierUid}/passes/reset:
+    parameters:
+    - $ref: '#/components/parameters/pathIdentifierUid'
+    post:
+      tags:
+      - access
+      - admin
+      summary: Reset left passes to max
+      description: Reset left passes to max
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Identifier is permanent
+        '401':
+          description: Log In
+        '403':
+          description: Administrator rights required
+
   /access/identifiers/items/list:
     get:
       tags:
@@ -2058,124 +2076,50 @@ paths:
         '403':
           description: Administrator rights required
 
-  ################################
-  /access/legacy/card/item/add:
-    post:
-      tags:
-      - access
-      - admin
-      summary: Create/Update card
-      description: |
-        Create/Update card
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Card'
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Wrong JSON body
-        '401':
-          description: Log In
-        '403':
-          description: Administrator rights required
-
-  /access/legacy/card/item/delete:
-    post:
-      tags:
-      - access
-      - admin
-      summary: Delete card
-      description: |
-        Delete card
-      parameters:
-      - name: cardId
-        in: query
-        description: Card UID
-        required: true
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Wrong/missing parameter
-        '401':
-          description: Log In
-        '403':
-          description: Administrator rights required
-
-  /access/legacy/card/items/list:
+  /access/identifiers/items/export:
     get:
       tags:
       - access
       - admin
-      summary: Returns cards table
-      description: |
-        Returns cards table
+      summary: Export items to .csv file
+      description: Export items to .csv file
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            text/csv:
               schema:
-                $ref: '#/components/schemas/CardList'
+                type: string
+                format: binary
         '401':
           description: Log In
         '403':
           description: Administrator rights required
 
-  /access/legacy/card/items/add:
+
+  /access/identifiers/items/import:
     post:
       tags:
       - access
       - admin
-      summary: Create/Update multiple cards
-      description: |
-        Create/Update multiple cards
+      summary: Import items from .csv file
+      description: Import items from .csv file
       requestBody:
         required: true
         content:
-          application/json:
+          text/csv:
             schema:
-              $ref: '#/components/schemas/CardList'
+              type: string
+              format: binary
       responses:
         '200':
           description: OK
-        '400':
-          description: Wrong JSON body
         '401':
           description: Log In
         '403':
           description: Administrator rights required
 
-  /access/legacy/card/items/delete:
-    post:
-      tags:
-      - access
-      - admin
-      summary: Delete multiple cards
-      description: |
-        Delete multiple cards
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CardIdList'
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Wrong JSON body
-        '401':
-          description: Log In
-        '403':
-          description: Administrator rights required
-
+  ################################
   #forward
   /forward/mode:
     get:
@@ -3357,11 +3301,11 @@ components:
     IdAccessOptions:
       type: object
       properties:
-        type:
-          type: string
-          description: Stucture for furter implementation (timeprofiles)
-          enum: [permanent]
-          example: permanent
+        is_permanent:
+          type: boolean
+          example: false
+      required:
+      - is_permanent
     #
     IdBaseOptions:
       type: object
@@ -3381,9 +3325,14 @@ components:
           enum: [card, ukey, inputCode]
           example: ukey
         identifier_number:
-          type: string
-          example: 123456
-          format: number
+          oneOf:
+          - type: integer
+            description: inputCode
+            example: 123456
+          - type: string
+            description: card or ukey
+            example: 123456ABCD
+            format: hex
         lock:
           type: string
           enum: [first, second, all]
@@ -3428,9 +3377,93 @@ components:
             $ref: '#/components/schemas/ListIdentifierEntity'
           example:
             [
-            {"key":"value"},
-            {"key":"value"},
-            {"key":"value"}
+            {
+              "base": {
+                "identifier_owner": {
+                  "name": "Sherlock Holmes",
+                  "type": "owner"
+                },
+                "identifier_type": "ukey",
+                "identifier_number": 123456,
+                "lock": "first"
+              },
+              "appartment": 3,
+              "access": {
+                "type": "permanent"
+              },
+              "valid": {
+                "time": {
+                  "is_permanent": false,
+                  "from": 1540819272,
+                  "to": 1540819272
+                },
+                "passes": {
+                  "is_permanent": false,
+                  "max_passes": 3
+                }
+              },
+              "additional": {
+                "passes_left": 3
+              }
+            },
+            {
+              "base": {
+                "identifier_owner": {
+                  "name": "Sherlock Holmes",
+                  "type": "owner"
+                },
+                "identifier_type": "ukey",
+                "identifier_number": 123456,
+                "lock": "first"
+              },
+              "appartment": 3,
+              "access": {
+                "type": "permanent"
+              },
+              "valid": {
+                "time": {
+                  "is_permanent": false,
+                  "from": 1540819272,
+                  "to": 1540819272
+                },
+                "passes": {
+                  "is_permanent": false,
+                  "max_passes": 3
+                }
+              },
+              "additional": {
+                "passes_left": 3
+              }
+            },
+            {
+              "base": {
+                "identifier_owner": {
+                  "name": "Sherlock Holmes",
+                  "type": "owner"
+                },
+                "identifier_type": "ukey",
+                "identifier_number": 123456,
+                "lock": "first"
+              },
+              "appartment": 3,
+              "access": {
+                "type": "permanent"
+              },
+              "valid": {
+                "time": {
+                  "is_permanent": false,
+                  "from": 1540819272,
+                  "to": 1540819272
+                },
+                "passes": {
+                  "is_permanent": false,
+                  "max_passes": 3
+                }
+              },
+              "additional": {
+                "passes_left": 3
+              }
+            }
             ]
         list_option:
           $ref: '#/components/schemas/ListOptions'
