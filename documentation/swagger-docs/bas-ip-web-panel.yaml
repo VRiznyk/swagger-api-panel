@@ -83,7 +83,7 @@ paths:
           type: string
       - name: password
         in: query
-        description: MD5 hash of the password for login
+        description: MD5 hash of the password for login (e. g.  123456=E10ADC3949BA59ABBE56E057F20F883E)
         required: true
         schema:
           type: string
@@ -95,7 +95,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Token'
         '400':
-          description: Wrong login or password
+          description: |
+            - Required parameters missed
+            - Wrong login or password
 
   /logout:
     get:
