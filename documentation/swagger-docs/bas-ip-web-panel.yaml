@@ -296,7 +296,7 @@ paths:
         '401':
           description: Log In
 
-  /device/settings/static:
+  /network/settings/static:
     post:
       tags:
       - network
@@ -3194,6 +3194,10 @@ components:
       type: object
       description: |
         If something wrong version will be `ERROR`
+      required:
+        - framework_version
+        - launcher_version
+        - hybrid_enable
       properties:
         framework_version:
           type: string
