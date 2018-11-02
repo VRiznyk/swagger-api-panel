@@ -3513,9 +3513,6 @@ components:
           type: string
           enum: ["320x240", "640x480", "1280x720"]
           example: "320x240"
-        payload_codec_h264:
-          type: integer
-          example: 102
     #
     Payload:
       type: object
