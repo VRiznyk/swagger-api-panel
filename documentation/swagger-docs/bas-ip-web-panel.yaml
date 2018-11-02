@@ -3195,9 +3195,9 @@ components:
       description: |
         If something wrong version will be `ERROR`
       required:
-        - framework_version
-        - launcher_version
-        - hybrid_enable
+      - framework_version
+      - launcher_version
+      - hybrid_enable
       properties:
         framework_version:
           type: string
