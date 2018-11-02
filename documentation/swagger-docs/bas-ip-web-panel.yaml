@@ -302,8 +302,7 @@ paths:
       - network
       - manager
       summary: Network static settings
-      description: |
-        Setup network static settings (doesn't turn on/off dhcp, use dhcp endpoint instead)
+      description: Setup network static settings and turn off dhcp
       requestBody:
         required: true
         content:
@@ -314,7 +313,9 @@ paths:
         '200':
           description: OK
         '400':
-          description: Wrong JSON body
+          description: |
+            - Wrong JSON body
+            - ip address is invalid
         '401':
           description: Log In
 
@@ -324,14 +325,7 @@ paths:
       - network
       - manager
       summary: Turn on dhcp
-      description: |
-        Turn on dhcp
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NetworkDhcpInfo'
+      description: Turn on dhcp
       responses:
         '200':
           description: OK
@@ -346,8 +340,7 @@ paths:
       - network
       - manager
       summary: Device MAC address
-      description: |
-        Returns device MAC address
+      description: Returns device MAC address
       responses:
         '200':
           description: OK
