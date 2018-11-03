@@ -3011,7 +3011,9 @@ paths:
         '200':
           description: OK
         '400':
-          description: Wrong/Missing parameter
+          description: |
+            - Wrong/Missing parameter
+            - Wrong password
         '401':
           description: Log In
         '403':
@@ -3042,7 +3044,9 @@ paths:
         '200':
           description: OK
         '400':
-          description: Wrong/Missing parameter
+          description: |
+            - Wrong/Missing parameter
+            - Wrong password
         '401':
           description: Log In
 
