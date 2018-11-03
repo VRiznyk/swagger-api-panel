@@ -1163,7 +1163,9 @@ paths:
           description: Log In
 
   #locks
-  /device/lock/dtmf:
+  /device/lock/dtmf/{lockNumber}:
+    parameters:
+    - $ref: '#/components/parameters/pathLockNumber'
     get:
       tags:
       - device
@@ -3525,11 +3527,6 @@ components:
     LockDtmf:
       type: object
       properties:
-        lock_number:
-          type: integer
-          minimum: 1
-          maximum: 2
-          example: 1
         lock_dtmf_enable:
           type: boolean
           example: true
