@@ -969,7 +969,7 @@ paths:
         '401':
           description: Log In
 
-  /device/settings/volume/speaker:
+  /device/settings/volume:
     get:
       tags:
       - device
@@ -1003,45 +1003,9 @@ paths:
         '200':
           description: OK
         '400':
-          description: Wrong JSON body
-        '401':
-          description: Log In
-
-  /device/settings/volume/mic:
-    get:
-      tags:
-      - device
-      - manager
-      summary: Mic volume settings
-      description: |
-        Return mic volume settings
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Volume'
-        '401':
-          description: Log In
-    post:
-      tags:
-      - device
-      - manager
-      summary: Mic volume settings
-      description: |
-        Setup mic volume settings
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Volume'
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Wrong JSON body
+          description: |
+            - Wrong JSON body
+            - Wrong volume level
         '401':
           description: Log In
 
