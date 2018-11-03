@@ -170,43 +170,6 @@ paths:
         '401':
           description: Log in
 
-  /frontend/language:
-    get:
-      tags:
-      - status
-      security: []
-      summary: Current frontend language
-      description: |
-        Get current fronend language
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Language'
-    post:
-      tags:
-      - status
-      - manager
-      summary: Set frontend language
-      parameters:
-      - name: language
-        in: query
-        description: The user name for login
-        required: true
-        schema:
-          $ref: '#/components/schemas/SupportedLanguage'
-      description: |
-        Uses for setting web interface language
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Wrong language
-        '401':
-          description: Log in
-
   /frontend/version:
     get:
       tags:
