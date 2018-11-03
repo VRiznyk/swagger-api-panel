@@ -1223,8 +1223,7 @@ paths:
       - apartment
       - manager
       summary: Apartment Entity
-      description: |
-        Create Apartment Entity
+      description: Update Apartment Entity
       requestBody:
         required: true
         content:
