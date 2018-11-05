@@ -1193,7 +1193,10 @@ paths:
                   uid:
                     $ref: '#/components/schemas/UidReference'
         '400':
-          description: Wrong JSON body
+          description: |
+              - Wrong JSON body
+              - Wrong Logical Address
+              - Apartment with that Logical Address already exist
         '401':
           description: Log In
 
