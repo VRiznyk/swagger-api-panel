@@ -3930,14 +3930,10 @@ components:
           enum: [card, ukey, inputCode]
           example: ukey
         identifier_number:
-          oneOf:
-          - type: integer
-            description: inputCode
-            example: 123456
-          - type: string
-            description: card or ukey
-            example: 123456ABCD
-            format: hex
+          type: string
+          description: hex or number
+          example: 123456ABCD
+          format: hex
         lock:
           type: string
           enum: [first, second, all]
