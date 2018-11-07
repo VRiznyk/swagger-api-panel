@@ -1218,7 +1218,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/DetailedApartmentEntity'
         '400':
-          description: Wrong apartment iud
+          description: Wrong apartment id
         '401':
           description: Log In
     patch:
@@ -1238,8 +1238,8 @@ paths:
           description: OK
         '400':
           description: |
-            Wrong JSON body |
-            Wrong apartment iud
+              - Wrong JSON body
+              - Wrong apartment iud
         '401':
           description: Log In
     delete:
@@ -1253,7 +1253,7 @@ paths:
         '200':
           description: OK
         '400':
-          description: Wrong apartment_iud
+          description: Wrong apartmentId
         '401':
           description: Log In
 
