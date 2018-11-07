@@ -1239,7 +1239,10 @@ paths:
         '400':
           description: |
               - Wrong JSON body
+              - Wrong Logical Address
+              - Apartment with that Logical Address already exist
               - Wrong apartment iud
+              - Wrong reference Id(s)
         '401':
           description: Log In
     delete:
