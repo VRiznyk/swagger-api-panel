@@ -1172,7 +1172,7 @@ paths:
     post:
       tags:
       - apartment
-      - manager
+      - admin
       summary: Apartment Entity
       description: |
         Create Apartment Entity
@@ -1199,6 +1199,8 @@ paths:
             - Apartment with that Logical Address already exist
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
 
   /apartment/item/{apartmentUid}:
     parameters:
@@ -1206,7 +1208,7 @@ paths:
     get:
       tags:
       - apartment
-      - manager
+      - admin
       summary: Apartment Entity
       description: |
         Returns Apartment Entity
@@ -1221,10 +1223,12 @@ paths:
           description: Wrong apartment id
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
     patch:
       tags:
       - apartment
-      - manager
+      - admin
       summary: Apartment Entity
       description: Update Apartment Entity
       requestBody:
@@ -1244,10 +1248,12 @@ paths:
             - Wrong apartment iud
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
     delete:
       tags:
       - apartment
-      - manager
+      - admin
       summary: Apartment Entity
       description: |
         Delete Apartment Entity
@@ -1258,6 +1264,8 @@ paths:
           description: Wrong apartmentId
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
 
   /apartment/item/{apartmentUid}/indentifier/{identifierUid}:
     parameters:
@@ -1266,7 +1274,7 @@ paths:
     post:
       tags:
       - apartment
-      - manager
+      - admin
       summary: Attach identifier to apartment
       description: Attach identifier to apartment
       responses:
@@ -1276,13 +1284,20 @@ paths:
           description: |
             - Wrong apartment iud
             - Wrong identifier uid
-            - Identifier uid is attached to another apartment
+            - Identifier uid is already attached to this apartment
+            - Identifier uid is already attached to another apartment
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
+
+  /apartment/item/unbind/indentifier/{identifierUid}:
+    parameters:
+    - $ref: '#/components/parameters/pathIdentifierUid'
     delete:
       tags:
       - apartment
-      - manager
+      - admin
       summary: Detach identifier from apartment
       description: Detach identifier from apartment
       responses:
@@ -1290,22 +1305,23 @@ paths:
           description: OK
         '400':
           description: |
-            - Wrong apartment iud
             - Wrong identifier uid
-            - Identifier uid is attached to another apartment
+            - Identifier already unbound
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
 
-  /apartment/item/{apartmentUid}/forward/{pathForwardUid}:
+  /apartment/item/{apartmentUid}/forward/{forwardUid}:
     parameters:
     - $ref: '#/components/parameters/pathApartmentUid'
     - $ref: '#/components/parameters/pathForwardUid'
     post:
       tags:
       - apartment
-      - manager
-      summary: Attach identifier to apartment
-      description: Attach identifier to apartment
+      - admin
+      summary: Attach forward rule to apartment
+      description: Attach forward rule to apartment
       responses:
         '200':
           description: OK
@@ -1313,32 +1329,38 @@ paths:
           description: |
             - Wrong apartment iud
             - Wrong forward uid
-            - Forward uid is attached to another apartment
+            - Forward uid is already attached to this apartment
+            - Forward uid is already attached to another apartment
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
+
+  /apartment/item/unbind/forward/{forwardUid}:
     delete:
       tags:
       - apartment
-      - manager
-      summary: Detach identifier from apartment
-      description: Detach identifier from apartment
+      - admin
+      summary: Detach forward rule from apartment
+      description: Detach forward rule from apartment
       responses:
         '200':
           description: OK
         '400':
           description: |
-            - Wrong apartment iud
             - Wrong forward uid
-            - Forward uid is attached to another apartment
+            - Forward already unbound
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
 
 
   /apartment/items/list:
     get:
       tags:
       - apartment
-      - manager
+      - admin
       summary: Apartment's list
       description: Return apartment's list
       parameters:
@@ -1363,12 +1385,14 @@ paths:
             - Wrong filter options
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
 
   /apartment/items/delete:
     post:
       tags:
       - apartment
-      - manager
+      - admin
       summary: Delete multiple apartment items
       description: Delete multiple apartment items
       requestBody:
@@ -1384,6 +1408,8 @@ paths:
           description: Wrong JSON body
         '401':
           description: Log In
+        '403':
+          description: Administrator rights required
 
   ################# access #################
 
