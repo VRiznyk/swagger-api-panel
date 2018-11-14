@@ -1379,7 +1379,7 @@ paths:
         '400':
           description: |
             - Wrong pagination limit
-            - Wrong pagintation page number
+            - Wrong pagination page number
             - Wrong sort field
             - Wrong sort type
             - Wrong filter options
